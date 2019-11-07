@@ -32,7 +32,9 @@ for filenum=1:length(allfiles)
     imgfname_full=([DATASET_FOLDER,'/Images/',fname]);
     img=double(imread(imgfname_full))./255;
     fout=[OUT_FOLDER,'/',OUT_SUBFOLDER,'/',fname(1:end-4),'.mat'];%replace .bmp with .mat
-    F=extractRandom(img);
+    
+    %% EXTRACT FUNCTION
+    F=extractGlobalColHist(img);
     save(fout,'F');
     toc
 end

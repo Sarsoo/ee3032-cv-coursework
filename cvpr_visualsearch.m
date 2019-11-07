@@ -35,10 +35,16 @@ DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 
 ALLFEAT=[];
 ALLFILES=cell(1,0);
+ALLCATs=[];
 ctr=1;
 allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
 for filenum=1:length(allfiles)
     fname=allfiles(filenum).name;
+    
+    %identify photo category for PR calculation
+    split_string = split(fname, '_');
+    ALLCATs(filenum) = str2double(split_string(1));
+    
     imgfname_full=([DATASET_FOLDER,'/Images/',fname]);
     img=double(imread(imgfname_full))./255;
     thesefeat=[];
@@ -48,6 +54,9 @@ for filenum=1:length(allfiles)
     ALLFEAT=[ALLFEAT ; F];
     ctr=ctr+1;
 end
+
+% get counts for each category for PR calculation
+CAT_HIST = histogram(ALLCATs).Values;
 
 %% 2) Pick an image at random to be the query
 NIMG=size(ALLFEAT,1);           % number of images in collection
@@ -59,10 +68,55 @@ dst=[];
 for i=1:NIMG
     candidate=ALLFEAT(i,:);
     query=ALLFEAT(queryimg,:);
-    thedst=cvpr_compare(query,candidate);
-    dst=[dst ; [thedst i]];
+    
+    category=ALLCATs(i);
+    
+    %% COMPARE FUNCTION
+    thedst=compareEuclidean(query,candidate);
+    dst=[dst ; [thedst i category]];
 end
 dst=sortrows(dst,1);  % sort the results
+
+%% 3.5) Calculate PR
+precision_values=[];
+recall_values=[];
+query_row = dst(1,:);
+query_category = query_row(1,3);
+for i=1:NIMG
+    
+    rows = dst(1:i, :);
+    
+    correct_results = 0;
+    incorrect_results = 0;
+    
+    for n=1:i
+        row = rows(n, :);
+        category = row(3);
+        
+        if category == query_category
+            correct_results = correct_results + 1;
+        else
+            incorrect_results = incorrect_results + 1;
+        end
+        
+    end
+    
+    precision = correct_results / i;
+    recall = correct_results / CAT_HIST(1,query_category);
+    
+    precision_values(i) = precision;
+    recall_values(i) = recall;
+end
+
+% plot PR curve
+plot(recall_values, precision_values);
+title('PR Curve');
+xlabel('Recall');
+ylabel('Precision');
+
+% for i=1:NIMG
+%     [i, " -> p: ", precision_values(i), "r: ", recall_values(i)]
+% end
 
 %% 4) Visualise the results
 %% These may be a little hard to see using imgshow
@@ -77,5 +131,5 @@ for i=1:size(dst,1)
    img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
    outdisplay=[outdisplay img];
 end
-imgshow(outdisplay);
-axis off;
+% imgshow(outdisplay);
+% axis off;
