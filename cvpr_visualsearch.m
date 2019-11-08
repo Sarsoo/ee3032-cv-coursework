@@ -27,6 +27,7 @@ DATASET_FOLDER = 'dataset';
 DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
+% DESCRIPTOR_SUBFOLDER='avgRGB';
 DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 
 
@@ -58,65 +59,105 @@ end
 % get counts for each category for PR calculation
 CAT_HIST = histogram(ALLCATs).Values;
 
-%% 2) Pick an image at random to be the query
-NIMG=size(ALLFEAT,1);           % number of images in collection
-queryimg=floor(rand()*NIMG);    % index of a random image
+run_total = 20;
+AP_values = zeros([1, run_total]);
+for run=1:run_total
+    %% 2) Pick an image at random to be the query
+    NIMG=size(ALLFEAT,1);           % number of images in collection
+    queryimg=floor(rand()*NIMG);    % index of a random image
 
 
-%% 3) Compute the distance of image to the query
-dst=[];
-for i=1:NIMG
-    candidate=ALLFEAT(i,:);
-    query=ALLFEAT(queryimg,:);
-    
-    category=ALLCATs(i);
-    
-    %% COMPARE FUNCTION
-    thedst=compareEuclidean(query,candidate);
-    dst=[dst ; [thedst i category]];
-end
-dst=sortrows(dst,1);  % sort the results
+    %% 3) Compute the distance of image to the query
+    dst=[];
+    for i=1:NIMG
+        candidate=ALLFEAT(i,:);
+        query=ALLFEAT(queryimg,:);
 
-%% 3.5) Calculate PR
-precision_values=[];
-recall_values=[];
-query_row = dst(1,:);
-query_category = query_row(1,3);
-for i=1:NIMG
-    
-    rows = dst(1:i, :);
-    
-    correct_results = 0;
-    incorrect_results = 0;
-    
-    for n=1:i
-        row = rows(n, :);
+        category=ALLCATs(i);
+
+        %% COMPARE FUNCTION
+        thedst=compareEuclidean(query,candidate);
+        dst=[dst ; [thedst i category]];
+    end
+    dst=sortrows(dst,1);  % sort the results
+
+    %% 3.5) Calculate PR
+    precision_values=zeros([1, NIMG]);
+    recall_values=zeros([1, NIMG]);
+
+    correct_at_n=zeros([1, NIMG]);
+
+    query_row = dst(1,:);
+    query_category = query_row(1,3);
+    for i=1:NIMG
+
+        rows = dst(1:i, :);
+
+        correct_results = 0;
+        incorrect_results = 0;
+
+        if i > 1    
+            for n=1:i - 1
+                row = rows(n, :);
+                category = row(3);
+
+                if category == query_category
+                    correct_results = correct_results + 1;
+                else
+                    incorrect_results = incorrect_results + 1;
+                end
+
+            end
+        end
+
+        % LAST ROW
+        row = rows(i, :);
         category = row(3);
-        
+
         if category == query_category
             correct_results = correct_results + 1;
+            correct_at_n(i) = 1;
         else
             incorrect_results = incorrect_results + 1;
         end
-        
+
+        precision = correct_results / i;
+        recall = correct_results / CAT_HIST(1,query_category);
+
+        precision_values(i) = precision;
+        recall_values(i) = recall;
     end
+
+
+    %% 3.6) calculate AP
+    P_rel_n = zeros([1, NIMG]);
+    for i = 1:NIMG
+        precision = precision_values(i);
+        i_result_relevant = correct_at_n(i);
+
+        P_rel_n(i) = precision * i_result_relevant;
+    end
+
+    sum_P_rel_n = sum(P_rel_n);
+    average_precision = sum_P_rel_n / CAT_HIST(1,query_category);
     
-    precision = correct_results / i;
-    recall = correct_results / CAT_HIST(1,query_category);
-    
-    precision_values(i) = precision;
-    recall_values(i) = recall;
+    AP_values(run) = average_precision;
+
+
+    %% 3.8) plot PR curve
+    figure(1)
+    plot(recall_values, precision_values);
+    hold on;
+    title('PR Curve');
+    xlabel('Recall');
+    ylabel('Precision');
+
 end
 
-% plot PR curve
-plot(recall_values, precision_values);
-title('PR Curve');
-xlabel('Recall');
-ylabel('Precision');
+%% 3.9 Calculate MAP
+AP_values
+MAP = mean(AP_values)
 
-% for i=1:NIMG
-%     [i, " -> p: ", precision_values(i), "r: ", recall_values(i)]
-% end
 
 %% 4) Visualise the results
 %% These may be a little hard to see using imgshow
@@ -131,5 +172,6 @@ for i=1:size(dst,1)
    img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
    outdisplay=[outdisplay img];
 end
-% imgshow(outdisplay);
-% axis off;
+figure(2)
+imgshow(outdisplay);
+axis off;
