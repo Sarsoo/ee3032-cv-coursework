@@ -28,7 +28,9 @@ DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
 % DESCRIPTOR_SUBFOLDER='avgRGB';
-DESCRIPTOR_SUBFOLDER='globalRGBhisto';
+% DESCRIPTOR_SUBFOLDER='globalRGBhisto';
+% DESCRIPTOR_SUBFOLDER='spatialColour';
+DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 
 %% 1) Load all the descriptors into "ALLFEAT"
@@ -59,7 +61,7 @@ end
 % get counts for each category for PR calculation
 CAT_HIST = histogram(ALLCATs).Values;
 
-run_total = 20;
+run_total = 100;
 AP_values = zeros([1, run_total]);
 for run=1:run_total
     %% 2) Pick an image at random to be the query
@@ -81,7 +83,7 @@ for run=1:run_total
     end
     dst=sortrows(dst,1);  % sort the results
 
-    %% 3.5) Calculate PR
+    %% 4) Calculate PR
     precision_values=zeros([1, NIMG]);
     recall_values=zeros([1, NIMG]);
 
@@ -89,6 +91,8 @@ for run=1:run_total
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
+    
+    %calculate PR for each n
     for i=1:NIMG
 
         rows = dst(1:i, :);
@@ -129,7 +133,7 @@ for run=1:run_total
     end
 
 
-    %% 3.6) calculate AP
+    %% 5) calculate AP
     P_rel_n = zeros([1, NIMG]);
     for i = 1:NIMG
         precision = precision_values(i);
@@ -142,9 +146,10 @@ for run=1:run_total
     average_precision = sum_P_rel_n / CAT_HIST(1,query_category);
     
     AP_values(run) = average_precision;
+    
 
 
-    %% 3.8) plot PR curve
+    %% 6) plot PR curve
     figure(1)
     plot(recall_values, precision_values);
     hold on;
@@ -154,12 +159,18 @@ for run=1:run_total
 
 end
 
-%% 3.9 Calculate MAP
+%% 7 Calculate MAP
 AP_values
 MAP = mean(AP_values)
 
+figure(2)
+plot(1:run_total, AP_values);
+title('Average Precision Per Run');
+xlabel('Run');
+ylabel('Average Precision');
 
-%% 4) Visualise the results
+
+%% 8) Visualise the results
 %% These may be a little hard to see using imgshow
 %% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
 
@@ -172,6 +183,6 @@ for i=1:size(dst,1)
    img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
    outdisplay=[outdisplay img];
 end
-figure(2)
+figure(3)
 imgshow(outdisplay);
 axis off;
