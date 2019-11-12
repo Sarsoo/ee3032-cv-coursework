@@ -105,7 +105,7 @@ for run=1:run_total
                 row = rows(n, :);
                 category = row(3);
 
-                if category == query_category
+                if category == query_category;
                     correct_results = correct_results + 1;
                 else
                     incorrect_results = incorrect_results + 1;
@@ -142,7 +142,7 @@ for run=1:run_total
         P_rel_n(i) = precision * i_result_relevant;
     end
 
-    sum_P_rel_n = sum(P_rel_n);
+    sum_P_rel_n = sum(P_rel_n)
     average_precision = sum_P_rel_n / CAT_HIST(1,query_category);
     
     AP_values(run) = average_precision;
@@ -160,8 +160,15 @@ for run=1:run_total
 end
 
 %% 7 Calculate MAP
-AP_values
+figure(4)
+histogram(AP_values);
+title('Average Precision Distribution');
+ylabel('Count');
+xlabel('Average Precision');
+xlim([0, 1]);
+
 MAP = mean(AP_values)
+AP_sd = std(AP_values)
 
 figure(2)
 plot(1:run_total, AP_values);

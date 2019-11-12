@@ -1,7 +1,7 @@
 function F=getEdgeAngleHist(mag_img, angle_img)
 
 bins = 8;
-threshold = 0.1;
+threshold = 0.05;
 
 dimensions = size(angle_img);
 rows = dimensions(1);
@@ -22,4 +22,4 @@ for i = 1:rows
 end
 
 F= histogram(vals, bins, 'Normalization', 'probability').Values;
-return;
+return; 

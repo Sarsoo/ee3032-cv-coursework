@@ -1,6 +1,6 @@
 function F=extractGlobalColHist(img)
 
-divs = 4;
+divs = 8;
 
 qimg = floor(img .* divs);
 bin = qimg(:,:,1) * divs^2 + qimg(:,:,2) * divs^1 + qimg(:,:,3);

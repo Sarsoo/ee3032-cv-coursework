@@ -121,7 +121,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Section
-Theoretical Implementations
+Theory
 \end_layout
 
 \begin_layout Section
@@ -130,6 +130,25 @@ Results
 
 \begin_layout Section
 Conclusions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body

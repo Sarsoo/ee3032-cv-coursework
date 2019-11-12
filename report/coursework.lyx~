@@ -96,6 +96,14 @@ Andy Pack (6420013)
 
 \end_layout
 
+\begin_layout Section*
+Abstract
+\end_layout
+
+\begin_layout Standard
+abstract
+\end_layout
+
 \begin_layout LyX-Code
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
