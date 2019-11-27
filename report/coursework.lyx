@@ -121,11 +121,477 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Section
-Theory
+Introduction
+\end_layout
+
+\begin_layout Standard
+An application of computer vision and visual media processing is that of
+ viusal search, the ability to quantitatively identify features of an image
+ such that other images can be compared and ranked based on similarity.
+\end_layout
+
+\begin_layout Standard
+These measured features can be arranged as a data structure or descriptor
+ and a visual search system can be composed of the extraction and comparison
+ of these descriptors.
+\end_layout
+
+\begin_layout Subsection
+Extraction
+\end_layout
+
+\begin_layout Standard
+When arranged as three 2D arrays of intensity for each colour channel, an
+ image can be manipulated and measured to identify features using colour
+ and shape information.
+ The methods for doing so have varying applicability and efficacy to a visual
+ search system, many also have variables which can be tuned to improve performan
+ce.
+\end_layout
+
+\begin_layout Subsection
+Comparison
+\end_layout
+
+\begin_layout Standard
+Typically a descriptor is a single column vector of numbers calculated about
+ an image.
+ This vector allows an image descriptor to plotted as a point in a feature
+ space of the same dimensionality as the vector.
+ Images that are close together in this feature space will indicate that
+ they have similar descriptors.
+ Methods for calculating the distance will determine how images are ranked.
+\end_layout
+
+\begin_layout Subsection
+Applications
+\end_layout
+
+\begin_layout Standard
+Visual search is used in consumer products to generate powerful results
+ such as Google Lens and Google reverse image search.
+ It also has applicability as smaller features of products such as 'related
+ products' results.
+\end_layout
+
+\begin_layout Section
+Theoretical Implementations
+\end_layout
+
+\begin_layout Subsection
+Average Colour
+\end_layout
+
+\begin_layout Standard
+Average colour represents one of the most basic descriptors capable of being
+ calculated about an image, an array of three numbers for the average red
+ green and blue intensity values found in the image.
+ 
+\end_layout
+
+\begin_layout Standard
+These three numbers hold no information about the distribution of colour
+ throughout the image and no information based on edge and shape information.
+ The lack of either hinders it's applicability to any real world problems.
+ The only advantage would be the speed of calculation.
+\end_layout
+
+\begin_layout Subsection
+Global Colour Histogram
+\end_layout
+
+\begin_layout Standard
+A global colour histogram extracts colour distribution information from
+ an image which can be used as a descriptor.
+\end_layout
+
+\begin_layout Standard
+Each pixel in an image can be plotted as a point in it's 3D colour space
+ with the axes being red, green and blue intensity values for each pixel.
+ Visually inspecting this colour space will provide information about colour
+ scattering found throughout the image.
+ As different resolutions of images will produce datasets of different sizes
+ in the feature space, a descriptor must be devised that transforms this
+ data into a resolution agnostic form which can be compared.
+\end_layout
+
+\begin_layout Standard
+Each axes is partitioned into 
+\begin_inset Formula $q$
+\end_inset
+
+ divisions so that a histogram can be calculated for each colour channel.
+ Each channel's intensity value, 
+\begin_inset Formula $val$
+\end_inset
+
+, can be converted into an integer bin value using equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:integer-bin-calc"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, where floor strips a float value into an integer by truncating all values
+ past the decimal point.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+bin\:val=floor\left(q\cdotp\frac{val}{256}\right)\label{eq:integer-bin-calc}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This allows each pixel to now be represented as a 3D point of three 'binned'
+ values, a full RGB colour space has been reduced to three colour histrograms,
+ one for each channel.
+ In order to arrange this as a descriptor each point should be further reduced
+ to a single number so that a global histogram can be formed of these values.
+ This is done by taking decimal bin integers and concatenating them into
+ a single number in base 
+\begin_inset Formula $q$
+\end_inset
+
+.
+ For an RGB colour space, each pixel can be augmented as shown in equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:base-conversion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+pixel\:bin=red\:bin\cdotp q^{2}+green\:bin\cdotp q^{1}+blue\:bin\cdotp q^{0}\label{eq:base-conversion}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calculating a histogram of each pixel's bin value will function as a descriptor
+ for the image once normalised by count.
+ This normalisation will remove the effect of changing resolutions of image.
+\end_layout
+
+\begin_layout Standard
+Each descriptor plots an image as a point in a 
+\begin_inset Formula $q^{3}$
+\end_inset
+
+-dimensional feature space where similiarity can be computed using a suitable
+ distance measure (L1 norm for example).
+\end_layout
+
+\begin_layout Subsubsection
+Efficacy
+\end_layout
+
+\begin_layout Standard
+The advantage of global colour histogram over the average RGB descriptor
+ is that amounts of colours are now represented in the descriptor.
+ Clusters of similar colours representing objects or backgrounds will be
+ captured and can be compared.
+\end_layout
+
+\begin_layout Standard
+A global histogram, however, holds no spatial colour information, this is
+ lost by plotting the pixels in their colour space.
+ 
+\end_layout
+
+\begin_layout Standard
+This suggests that performing a pixel shuffling operation on the image will
+ not affect the extracted descriptor which has implications on the adequacy
+ of the methodology for a visual search system.
+\end_layout
+
+\begin_layout Subsection
+Spatial Colour
+\end_layout
+
+\begin_layout Standard
+Spatial techniques involve calculating descriptors tht are discriminative
+ between colour and shape information in different regions of the image.
+ This is done by dividing the image into a grid of cells and then calculating
+ individual 'sub-descriptors' which are concatenated into the global image
+ descriptor.
+\end_layout
+
+\begin_layout Standard
+These sub-descriptors can be calculated using any approprate method however
+ a main consideration should be the dimensionality of the final descriptor.
+ This can be calculted using the following equation,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D_{total}=W\cdotp H\cdotp D_{sub-descriptor}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $W$
+\end_inset
+
+ and 
+\begin_inset Formula $H$
+\end_inset
+
+ refer to the number of columns and rows of the determined grid respectively.
+\end_layout
+
+\begin_layout Standard
+It would be feasible to calculate a colour histogram however this already
+ generates a desciptor of 
+\begin_inset Formula $q^{3}$
+\end_inset
+
+ dimensionality, where 
+\begin_inset Formula $q$
+\end_inset
+
+ is the number of divisions.
+\end_layout
+
+\begin_layout Standard
+For example using a 
+\begin_inset Formula $q$
+\end_inset
+
+ value of 4 and a spatial grid of 6 x 4 would produce a descriptor in 1536
+ dimenions, while a 
+\begin_inset Formula $q$
+\end_inset
+
+ of 6 with a a grid of 10 x 6 is 12,960 dimensional.
+\end_layout
+
+\begin_layout Standard
+This is an extremely high value and will increase the time taken to calculate
+ and compare descriptors.
+\end_layout
+
+\begin_layout Standard
+For a spatial colour descriptor the average RGB values for each cell can
+ be used as these sub descriptors will be three dimensional reducing the
+ total value.
+\end_layout
+
+\begin_layout Subsection
+Spatial Texture
+\end_layout
+
+\begin_layout Standard
+Spatial texture replaces the colour sub-desciptor from before with a descriptor
+ that reflects the texture found in the image as described by the edges
+ that can be detected.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Edge Detection
+\end_layout
+
+\begin_layout Standard
+Edges can be detected in an image by finding areas where neighbouring pixels
+ have significantly different intensities.
+\end_layout
+
+\begin_layout Standard
+Mathematically this can be seen as taking the first derivative of the image
+ by convolving it with a Sobel filter.
+ The Sobel filters are a pair of 3x3 kernels, one for each axes (see figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3x3-Sobel-filter"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), which approximates the gradient of the intensity of an image.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Formula $S_{x}=\begin{bmatrix}-1 & 0 & +1\\
+-2 & 0 & +2\\
+-1 & 0 & +1
+\end{bmatrix}$
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Formula $S_{y}=\begin{bmatrix}+1 & +2 & +1\\
+0 & 0 & 0\\
+-1 & -2 & -1
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+3x3 Sobel filter kernels for 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ axes
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3x3-Sobel-filter"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The results of convolving each filter with the image are two images that
+ express the intensity of edges in that axes.
+ 
+\end_layout
+
+\begin_layout Standard
+From here a composite edge magnitude image of the two can be calculated
+ as shown,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+G_{composite}=\sqrt{G_{x}^{2}+G_{y}^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With the angles of the edges calculated as follows,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Theta=\arctan\left(\frac{G_{y}}{G_{x}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Application
+\end_layout
+
+\begin_layout Standard
+To create a descriptor, both the angle and magnitude information will be
+ used, the descriptor itself will reflect information about the angle of
+ the edges found.
+\end_layout
+
+\begin_layout Standard
+First the image grid cells will be thresholded using the magnitude values.
+ Magnitude values can be seen to represent the confidence with which edges
+ can be found and so here a decision is effectively being made as to what
+ are and are not edges, this value can be tuned to best match the applcation.
+\end_layout
+
+\begin_layout Standard
+Once a thresholded edge maginute image has been found, a normalised histogram
+ will be calculated for the angles of these edges.
+ This histograms of each grid cell will act as the descriptor when concatenated
+ into a vector of dimensionality, 
+\begin_inset Formula $D$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D_{total}=W\cdotp H\cdotp q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $q$
+\end_inset
+
+ refers to the number of edge histogram bins.
+\end_layout
+
+\begin_layout Section
+Test Methods
 \end_layout
 
 \begin_layout Section
 Results
+\end_layout
+
+\begin_layout Section
+Discussion
 \end_layout
 
 \begin_layout Section
@@ -140,6 +606,7 @@ Conclusions
 \end_layout
 
 \begin_layout Standard
+\start_of_appendix
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintCited"
