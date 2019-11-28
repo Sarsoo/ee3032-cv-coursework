@@ -32,6 +32,28 @@ DESCRIPTOR_FOLDER = 'descriptors';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
 DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
+CATEGORIES = ["Farm Animal" 
+    "Tree"
+    "Building"
+    "Plane"
+    "Cow"
+    "Face"
+    "Car"
+    "Bike"
+    "Sheep"
+    "Flower"
+    "Sign"
+    "Bird"
+    "Book Shelf"
+    "Bench"
+    "Cat"
+    "Dog"
+    "Road"
+    "Water Features"
+    "Human Figures"
+    "Coast"
+    ];
+
 
 %% 1) Load all the descriptors into "ALLFEAT"
 %% each row of ALLFEAT is a descriptor (is an image)
@@ -60,8 +82,9 @@ end
 
 % get counts for each category for PR calculation
 CAT_HIST = histogram(ALLCATs).Values;
+CAT_TOTAL = length(CAT_HIST);
 
-run_total = 100;
+run_total = 1;
 AP_values = zeros([1, run_total]);
 for run=1:run_total
     %% 2) Pick an image at random to be the query
@@ -91,6 +114,8 @@ for run=1:run_total
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
+    fprintf('category was %s', CATEGORIES(query_category))
+    
     
     %calculate PR for each n
     for i=1:NIMG
@@ -105,7 +130,7 @@ for run=1:run_total
                 row = rows(n, :);
                 category = row(3);
 
-                if category == query_category;
+                if category == query_category
                     correct_results = correct_results + 1;
                 else
                     incorrect_results = incorrect_results + 1;
@@ -142,7 +167,7 @@ for run=1:run_total
         P_rel_n(i) = precision * i_result_relevant;
     end
 
-    sum_P_rel_n = sum(P_rel_n)
+    sum_P_rel_n = sum(P_rel_n);
     average_precision = sum_P_rel_n / CAT_HIST(1,query_category);
     
     AP_values(run) = average_precision;
@@ -156,10 +181,33 @@ for run=1:run_total
     title('PR Curve');
     xlabel('Recall');
     ylabel('Precision');
+    
+    
+    %% 7) Visualise the results
+    %% These may be a little hard to see using imgshow
+    %% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
+
+    confusion_matrix = zeros(CAT_TOTAL);
+    
+    SHOW=15; % Show top 15 results
+    dst=dst(1:SHOW,:);
+    outdisplay=[];
+    for i=1:size(dst,1)
+       img=imread(ALLFILES{dst(i,2)});
+       img=img(1:2:end,1:2:end,:); % make image a quarter size
+       img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
+       outdisplay=[outdisplay img];
+       
+       %populate confusion matrix
+       confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
+    end
+    figure(3)
+    imgshow(outdisplay);
+    axis off;
 
 end
 
-%% 7 Calculate MAP
+%% 8 Calculate MAP
 figure(4)
 histogram(AP_values);
 title('Average Precision Distribution');
@@ -175,21 +223,3 @@ plot(1:run_total, AP_values);
 title('Average Precision Per Run');
 xlabel('Run');
 ylabel('Average Precision');
-
-
-%% 8) Visualise the results
-%% These may be a little hard to see using imgshow
-%% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
-
-SHOW=15; % Show top 15 results
-dst=dst(1:SHOW,:);
-outdisplay=[];
-for i=1:size(dst,1)
-   img=imread(ALLFILES{dst(i,2)});
-   img=img(1:2:end,1:2:end,:); % make image a quarter size
-   img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
-   outdisplay=[outdisplay img];
-end
-figure(3)
-imgshow(outdisplay);
-axis off;

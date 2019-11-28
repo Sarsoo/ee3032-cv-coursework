@@ -5,6 +5,9 @@
 \save_transient_properties true
 \origin unavailable
 \textclass article
+\begin_preamble
+\rfoot{6420013}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -43,9 +46,11 @@
 \use_package stackrel 1
 \use_package stmaryrd 1
 \use_package undertilde 1
-\cite_engine basic
-\cite_engine_type default
+\cite_engine biblatex
+\cite_engine_type authoryear
 \biblio_style plain
+\biblatex_bibstyle ieee
+\biblatex_citestyle ieee
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -71,7 +76,7 @@
 \dynamic_quotes 0
 \papercolumns 1
 \papersides 1
-\paperpagestyle default
+\paperpagestyle fancy
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -134,6 +139,7 @@ An application of computer vision and visual media processing is that of
 These measured features can be arranged as a data structure or descriptor
  and a visual search system can be composed of the extraction and comparison
  of these descriptors.
+ It is an example of content based image retrieval or CBIR.
 \end_layout
 
 \begin_layout Subsection
@@ -175,7 +181,7 @@ Visual search is used in consumer products to generate powerful results
 \end_layout
 
 \begin_layout Section
-Theoretical Implementations
+Descriptors
 \end_layout
 
 \begin_layout Subsection
@@ -400,6 +406,23 @@ For a spatial colour descriptor the average RGB values for each cell can
  total value.
 \end_layout
 
+\begin_layout Subsubsection
+Efficacy
+\end_layout
+
+\begin_layout Standard
+Computing a spatial descriptor can increase performance when highlighting
+ the difference to a colour histogram.
+ While a colour histogram will describe how many of each colour is present
+ in an image, spatial colour techniques of the type described above will
+ indicate the colours found in each area of the image.
+ Considering an image of a cow in a field, the colour histogram will identify
+ and count the brown pixels of the cow and the green pixels of the field,
+ spatial colour techniques will identify an area of brown in the middle
+ of an image surrounded by an area of green.
+ 
+\end_layout
+
 \begin_layout Subsection
 Spatial Texture
 \end_layout
@@ -434,7 +457,7 @@ noprefix "false"
 
 \end_inset
 
-), which approximates the gradient of the intensity of an image.
+), which approximates the gradient of the greyscale intensity of an image.
 \begin_inset Float figure
 wide false
 sideways false
@@ -583,7 +606,147 @@ Where
 \end_layout
 
 \begin_layout Section
+Distance Measures
+\end_layout
+
+\begin_layout Subsection
+L1 Norm
+\end_layout
+
+\begin_layout Section
 Test Methods
+\end_layout
+
+\begin_layout Subsection
+Dataset
+\end_layout
+
+\begin_layout Standard
+For the purposes of these experiments the Microsoft MSRC
+\begin_inset CommandInset citation
+LatexCommand cite
+key "microsoft_msrc"
+literal "false"
+
+\end_inset
+
+ version 2 dataset was used.
+ The set is made up of 591 images across 20 categories, the classifications
+ for which can be seen in appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:MSRC-Dataset-Classifications"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Precision and Recall
+\end_layout
+
+\begin_layout Standard
+When comapring the effectiveness of different descriptors the main measurements
+ are those of precision and recall.
+\end_layout
+
+\begin_layout Standard
+Once the visual search system has ranked a dataset on similarity to a query
+ image, the precision and recall can be calculated up to 
+\begin_inset Formula $n$
+\end_inset
+
+ images through the ranked list.
+\end_layout
+
+\begin_layout Standard
+At each 
+\begin_inset Formula $n$
+\end_inset
+
+ the precision is defined as the number of images up to 
+\begin_inset Formula $n$
+\end_inset
+
+ that are classed as relevant.
+ Higher precision values indicate better system accuracy and an ideal system
+ response as 
+\begin_inset Formula $n$
+\end_inset
+
+ increases would be a precision of 1 until all relevant documents have been
+ returned at which point it would reduce to a minimum value of the fraction
+ of relevant documents in the dataset.
+ This would indicate that the system is able to select a relevant image
+ every time one is available.
+\end_layout
+
+\begin_layout Standard
+The recall is defined at 
+\begin_inset Formula $n$
+\end_inset
+
+ as how many of the available relevant results have been returned up to
+ 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ Higher recall values at 
+\begin_inset Formula $n$
+\end_inset
+
+ indicate that the system can recall relevant documents faster with less
+ false positives and begins at 0 before increasing to a maximum of 1 as
+ 
+\begin_inset Formula $n$
+\end_inset
+
+ increases when all have been returned.
+\end_layout
+
+\begin_layout Standard
+While both measurements appear to reflect similar concepts there is a difference.
+ Precision is a measure of how accurately a system can decide whether a
+ document is relevant while recall can be thought of as a measure of a systems
+ repeated accuracy and measures how long it takes to retrieve all relevant
+ documents.
+\end_layout
+
+\begin_layout Standard
+A system with high recall but low precision will indicate that the system
+ is effectively able to retrieve all relevant documents eventually however
+ there will be false positives within the results.
+ Results of this quality would be advantageous when it is important to obtain
+ all relevant results however not when the relevance of each and every one
+ is valued.
+\end_layout
+
+\begin_layout Standard
+A system with high precision but low recall would indicate that the system
+ is able to very confident in its selection of relevant documents but may
+ indicate an increase in false negatives.
+\end_layout
+
+\begin_layout Subsection
+Precision Recall Curve
+\end_layout
+
+\begin_layout Standard
+A way to visualise the response of a system is to calculate both precision
+ and recall at each 
+\begin_inset Formula $n$
+\end_inset
+
+ and plot both as what is known as a precision-recall curve or PR curve.
+\end_layout
+
+\begin_layout Subsection
+Methods
 \end_layout
 
 \begin_layout Section
@@ -612,6 +775,451 @@ LatexCommand bibtex
 btprint "btPrintCited"
 bibfiles "references"
 options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+MSRC Dataset Classifications
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MSRC-Dataset-Classifications"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="21" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Category Index
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Category Classification
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Farm Animal
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tree
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Building
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plane
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cow
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Face
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Car
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bike
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sheep
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Flower
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+11
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sign
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bird
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Book Shelf
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bench
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cat
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dog
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Road
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Water Features
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+19
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Human Figures
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coast
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
 \end_inset
 
