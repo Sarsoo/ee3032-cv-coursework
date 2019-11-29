@@ -142,6 +142,13 @@ These measured features can be arranged as a data structure or descriptor
  It is an example of content based image retrieval or CBIR.
 \end_layout
 
+\begin_layout Standard
+Visual search is used in consumer products to generate powerful results
+ such as Google Lens and Google reverse image search.
+ It also has applicability as smaller features of products such as 'related
+ products' results.
+\end_layout
+
 \begin_layout Subsection
 Extraction
 \end_layout
@@ -167,17 +174,6 @@ Typically a descriptor is a single column vector of numbers calculated about
  Images that are close together in this feature space will indicate that
  they have similar descriptors.
  Methods for calculating the distance will determine how images are ranked.
-\end_layout
-
-\begin_layout Subsection
-Applications
-\end_layout
-
-\begin_layout Standard
-Visual search is used in consumer products to generate powerful results
- such as Google Lens and Google reverse image search.
- It also has applicability as smaller features of products such as 'related
- products' results.
 \end_layout
 
 \begin_layout Section
@@ -605,12 +601,56 @@ Where
  refers to the number of edge histogram bins.
 \end_layout
 
+\begin_layout Subsection
+Principal Component Analysis
+\end_layout
+
 \begin_layout Section
 Distance Measures
 \end_layout
 
+\begin_layout Standard
+Once image descriptors are plotted in a feature space a visual search system
+ compares descriptors by measuring the distance between them.
+ The method for doing so will affect the ranking of descriptors.
+\end_layout
+
 \begin_layout Subsection
 L1 Norm
+\end_layout
+
+\begin_layout Subsection
+L2 Norm
+\end_layout
+
+\begin_layout Standard
+The L2 norm, or Euclidean distance, is the shortest difference between two
+ points in space, it is also referred to as the magnitude of a vector.
+ In a three dimensional Euclidean space the magnitude of a vector, 
+\begin_inset Formula $x=\left(i,j,k\right)$
+\end_inset
+
+, is given by,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left\Vert x\right\Vert _{2}=\sqrt{i^{2}+j^{2}+k^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It's intuitive distance measurement makes it the most commonly used norm
+ in Euclidean space.
+\end_layout
+
+\begin_layout Subsection
+Mahalanobis Distance
 \end_layout
 
 \begin_layout Section
@@ -643,6 +683,28 @@ noprefix "false"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+Worth noting about the dataset is that there are some similarities and overlap
+ between categories which has implications on the results which can be calculate
+d when using it.
+\end_layout
+
+\begin_layout Standard
+For example category 1 is a collection of images of cows, sheep and horses
+ on grass however cows and sheep each have their own distinct categories.
+ Category 18 also has many similarities to category 20 with both being mainly
+ shots of bodies of water and boats in water of varying sizes.
+ 
+\end_layout
+
+\begin_layout Standard
+During the evaulation of implemented visual search techniques the classification
+ of each image is done by referencing the group index they are named with.
+ As such, occurences of false negatives may increase as images that do in
+ fact look similar as they are both, say, images of cows will be marked
+ as not similar and measure negatively for the performance of the method.
 \end_layout
 
 \begin_layout Subsection
@@ -737,20 +799,83 @@ Precision Recall Curve
 \end_layout
 
 \begin_layout Standard
-A way to visualise the response of a system is to calculate both precision
- and recall at each 
+A way to visualise the response of a visual search system is to calculate
+ both precision and recall for all values of 
 \begin_inset Formula $n$
 \end_inset
 
- and plot both as what is known as a precision-recall curve or PR curve.
+ and plot each pair against each for what is known as a precision-recall
+ curve or PR curve.
 \end_layout
 
 \begin_layout Subsection
 Methods
 \end_layout
 
+\begin_layout Standard
+In order to evaluate the performance of each descriptor two different tests
+ were conducted.
+\end_layout
+
+\begin_layout Subsubsection
+Category Response
+\end_layout
+
+\begin_layout Standard
+The category response aims to control for a descriptor's varying performance
+ at each of the dataset's categories by looping through each category and
+ randomly selecting an image from each as the query image.
+ Each category iteration has precision and recall values calculated for
+ all 
+\begin_inset Formula $n$
+\end_inset
+
+ to allow the mean average precision to be calculated.
+ This mean value is calculated from 20 iterations for the MSRCv2 dataset.
+\end_layout
+
+\begin_layout Standard
+Completing one iteration for each category also allows a confusion matrix
+ to be constructed.
+ For each iteration the top 20 results were evaluated, this number was chosen
+ as this is approximately the mean number of images in each category.
+ 
+\end_layout
+
+\begin_layout Standard
+The completed confusion matrix allows the main category confusions to be
+ identified and discussions to be made.
+\end_layout
+
+\begin_layout Subsubsection
+Random Response
+\end_layout
+
+\begin_layout Standard
+The random response places emphasis on iteration over controlling for inter-cate
+gory response.
+ Here query images are selected at random from the entire dataset and many
+ iterations are run in order to identify a mean response.
+\end_layout
+
 \begin_layout Section
 Results
+\end_layout
+
+\begin_layout Subsection
+Average RGB
+\end_layout
+
+\begin_layout Subsection
+Global Colour Histogram
+\end_layout
+
+\begin_layout Subsection
+Spatial Colour
+\end_layout
+
+\begin_layout Subsection
+Spatial Colour and Texture
 \end_layout
 
 \begin_layout Section
@@ -782,7 +907,7 @@ options "plain"
 \end_layout
 
 \begin_layout Section
-MSRC Dataset Classifications
+MSRCv2 Dataset Classifications
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:MSRC-Dataset-Classifications"
@@ -1073,7 +1198,7 @@ Bird
 \begin_inset Text
 
 \begin_layout Plain Layout
-Book Shelf
+Books
 \end_layout
 
 \end_inset

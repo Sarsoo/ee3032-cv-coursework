@@ -84,15 +84,15 @@ end
 CAT_HIST = histogram(ALLCATs).Values;
 CAT_TOTAL = length(CAT_HIST);
 
-run_total = 50;
-AP_values = zeros([1, run_total]);
-for run=1:run_total
+NIMG=size(ALLFEAT,1);           % number of images in collection
+
+confusion_matrix = zeros(CAT_TOTAL);
+
+AP_values = zeros([1, CAT_TOTAL]);
+for run=1:CAT_TOTAL
+    
     %% 2) Pick an image at random to be the query
-    NIMG=size(ALLFEAT,1);           % number of images in collection
-    queryimg=floor(rand()*NIMG);    % index of a random image
-    if queryimg == 0
-        queryimg = 1;
-    end
+    queryimg=getRandomCategoryImage(run);    % index of a random image
 
     %% 3) Compute the distance of image to the query
     dst=[];
@@ -103,7 +103,7 @@ for run=1:run_total
         category=ALLCATs(i);
 
         %% COMPARE FUNCTION
-        thedst=compareEuclidean(query,candidate);
+        thedst=compareEuclidean(query, candidate);
         dst=[dst ; [thedst i category]];
     end
     dst=sortrows(dst,1);  % sort the results
@@ -116,7 +116,7 @@ for run=1:run_total
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
-    fprintf('category was %s\n', CATEGORIES(query_category))
+    fprintf('category was %s, %i, %i\n', CATEGORIES(query_category), query_category, run)
     
     
     %calculate PR for each n
@@ -188,26 +188,27 @@ for run=1:run_total
     %% 7) Visualise the results
     %% These may be a little hard to see using imgshow
     %% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
-
-%     confusion_matrix = zeros(CAT_TOTAL);
-%     
-%     SHOW=15; % Show top 15 results
-%     dst=dst(1:SHOW,:);
-%     outdisplay=[];
-%     for i=1:size(dst,1)
-%        img=imread(ALLFILES{dst(i,2)});
-%        img=img(1:2:end,1:2:end,:); % make image a quarter size
-%        img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
-%        outdisplay=[outdisplay img];
-%        
-%        %populate confusion matrix
-%        confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
-%     end
+    
+    SHOW=20; % Show top 15 results
+    dst=dst(1:SHOW,:);
+    outdisplay=[];
+    for i=1:size(dst,1)
+       img=imread(ALLFILES{dst(i,2)});
+       img=img(1:2:end,1:2:end,:); % make image a quarter size
+       img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
+       outdisplay=[outdisplay img];
+       
+       %populate confusion matrix
+       confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
+    end
 %     figure(3)
 %     imgshow(outdisplay);
 %     axis off;
 
 end
+
+% normalise confusion matrix
+norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
 
 %% 8 Calculate MAP
 % figure(4)
@@ -221,7 +222,7 @@ MAP = mean(AP_values)
 AP_sd = std(AP_values)
 
 % figure(2)
-% plot(1:run_total, AP_values);
+% plot(1:CAT_TOTAL, AP_values);
 % title('Average Precision Per Run');
 % xlabel('Run');
 % ylabel('Average Precision');
