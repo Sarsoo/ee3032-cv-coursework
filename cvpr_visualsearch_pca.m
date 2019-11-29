@@ -27,10 +27,10 @@ DATASET_FOLDER = 'dataset';
 DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
-DESCRIPTOR_SUBFOLDER='avgRGB';
+% DESCRIPTOR_SUBFOLDER='avgRGB';
 % DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
-% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -95,23 +95,17 @@ for iterating_category=1:CAT_TOTAL
     %% 2) Select descriptors for category and training data
     category_training_descriptors = [];
     test_descriptors = [];
+    test_categories = [];
     for i=1:NIMG
-        if iterating_category == ALLCATs(i)
+        if (iterating_category == ALLCATs(i)) && (size(category_training_descriptors,1) < MODEL_SIZE)
             category_training_descriptors = [ category_training_descriptors ; ALLFEAT(i,:) ];
         else
             test_descriptors = [ test_descriptors ; ALLFEAT(i,:) ];
+            test_categories = [ test_categories ; ALLCATs(i) ];
         end
     end
     
-    model_descriptors = category_training_descriptors(1:MODEL_SIZE, :);
-    
-    model_mean = mean(model_descriptors);
-    model_data_min_mean = model_descriptors - repmat(model_mean, MODEL_SIZE, 1);
-
-    C = (model_data_min_mean' * model_data_min_mean) ./ MODEL_SIZE;
-    
-    [eig_vct, eig_val] = eig(C);
-    
+    [eig_vct, eig_val, model_mean] = getEigenModel(category_training_descriptors);
     
     TEST_SIZE = size(test_descriptors,1);
     
@@ -119,21 +113,19 @@ for iterating_category=1:CAT_TOTAL
     dst=[];
     for i=1:TEST_SIZE
         candidate=test_descriptors(i,:);
-        query=ALLFEAT(queryimg,:);
-
-        category=ALLCATs(i);
+        category=test_categories(i);
 
         %% COMPARE FUNCTION
-        thedst=compareEuclidean(query, candidate);
+        thedst=compareMahalanobis(eig_vct, eig_val, model_mean, candidate);
         dst=[dst ; [thedst i category]];
     end
     dst=sortrows(dst,1);  % sort the results
 
     %% 4) Calculate PR
-    precision_values=zeros([1, NIMG]);
-    recall_values=zeros([1, NIMG]);
+    precision_values=zeros([1, TEST_SIZE]);
+    recall_values=zeros([1, TEST_SIZE]);
 
-    correct_at_n=zeros([1, NIMG]);
+    correct_at_n=zeros([1, TEST_SIZE]);
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
@@ -141,7 +133,7 @@ for iterating_category=1:CAT_TOTAL
     
     
     %calculate PR for each n
-    for i=1:NIMG
+    for i=1:TEST_SIZE
 
         rows = dst(1:i, :);
 
@@ -182,8 +174,8 @@ for iterating_category=1:CAT_TOTAL
 
 
     %% 5) calculate AP
-    P_rel_n = zeros([1, NIMG]);
-    for i = 1:NIMG
+    P_rel_n = zeros([1, TEST_SIZE]);
+    for i = 1:TEST_SIZE
         precision = precision_values(i);
         i_result_relevant = correct_at_n(i);
 

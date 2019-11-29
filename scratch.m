@@ -1,2 +1,2 @@
 
-getRandomCategoryImage(7)
+loadDescriptors()

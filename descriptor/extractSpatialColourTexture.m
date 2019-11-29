@@ -1,7 +1,7 @@
 function F=extractSpatialColourTexture(img)
 
-grid_rows = 10;
-grid_columns = 10;
+grid_rows = 4;
+grid_columns = 4;
 
 img_size = size(img);
 img_rows = img_size(1);
@@ -43,7 +43,7 @@ for i = 1:grid_rows
         avg_vals = extractAvgRGB(img_cell);
         [mag_img, angle_img] = getEdgeInfo(grey_img_cell);
         
-        edge_hist = getEdgeAngleHist(mag_img, angle_img);
+        edge_hist = getEdgeAngleHist(mag_img, angle_img, 6, 0.05);
         
         %concatenate average values into vector
         descriptor = [descriptor edge_hist avg_vals(1) avg_vals(2) avg_vals(3)];

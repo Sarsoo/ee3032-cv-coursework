@@ -1,7 +1,4 @@
-function F=getEdgeAngleHist(mag_img, angle_img)
-
-bins = 8;
-threshold = 0.05;
+function F=getEdgeAngleHist(mag_img, angle_img, bins, threshold)
 
 dimensions = size(angle_img);
 rows = dimensions(1);
@@ -13,7 +10,7 @@ for i = 1:rows
         if mag_img(i, j) > threshold
             
             bin_value = angle_img(i, j) / (2 * pi);
-            bin_value = bin_value * bins;
+            bin_value = floor(bin_value * bins);
             
             vals = [vals bin_value];
             
@@ -21,5 +18,9 @@ for i = 1:rows
     end
 end
 
-F= histogram(vals, bins, 'Normalization', 'probability').Values;
+if size(vals, 2) == 0
+    F = zeros(1, bins)
+else
+    F= histogram(vals, bins, 'Normalization', 'probability').Values;
+end
 return; 
