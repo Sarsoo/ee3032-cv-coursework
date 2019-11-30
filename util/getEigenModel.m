@@ -1,12 +1,23 @@
-function [eig_vct, eig_val, model_mean]=getEigenModel(model_descriptors)
+function E=getEigenModel(obs)
 
-model_size = size(model_descriptors, 1);
+E.N  = size(obs,1);
+E.D  = size(obs,2);
+E.org= mean(obs);
 
-model_mean = mean(model_descriptors);
-model_data_min_mean = model_descriptors - repmat(model_mean, model_size, 1);
+obs_translated=obs-repmat(E.org,E.N,1);
 
-C = (model_data_min_mean' * model_data_min_mean) ./ model_size;
+C=(1/E.N) * (obs_translated' * obs_translated);
 
-[eig_vct, eig_val] = eig(C);
+[U V]=eig(C);
+
+% sort eigenvectors and eigenvalues by eigenvalue size (desc)
+linV=V*ones(size(V,2),1);
+S=[linV U'];
+S=flipud(sortrows(S,1));
+U=S(:,2:end)';
+V=S(:,1);
+
+E.vct=U;
+E.val=V;
 
 return;

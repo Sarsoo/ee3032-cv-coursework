@@ -27,10 +27,10 @@ DATASET_FOLDER = 'dataset';
 DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
-% DESCRIPTOR_SUBFOLDER='avgRGB';
+DESCRIPTOR_SUBFOLDER='avgRGB';
 % DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
-DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -53,6 +53,11 @@ CATEGORIES = ["Farm Animal"
     "Human Figures"
     "Coast"
     ];
+
+QUERY_INDEXES=[301 358 384 436 447 476 509 537 572 5 61 80 97 127 179 181 217 266 276 333];
+
+% 1_10 2_16 3_12 4_4 5_15 6_14 7_17 8_15 9_1 10_14 11_8 12_26 13_10 14_10
+% 15_8 16_10 17_16 18_5 19_15 20_12
 
 
 %% 1) Load all the descriptors into "ALLFEAT"
@@ -85,55 +90,53 @@ CAT_HIST = histogram(ALLCATs).Values;
 CAT_TOTAL = length(CAT_HIST);
 
 NIMG=size(ALLFEAT,1);           % number of images in collection
-MODEL_SIZE = 10;
 
 confusion_matrix = zeros(CAT_TOTAL);
 
 AP_values = zeros([1, CAT_TOTAL]);
-for iterating_category=1:CAT_TOTAL
+for iteration=1:CAT_TOTAL
     
-    %% 2) Select descriptors for category and training data
-    category_training_descriptors = [];
-    test_descriptors = [];
-    test_categories = [];
-    for i=1:NIMG
-        if (iterating_category == ALLCATs(i)) && (size(category_training_descriptors,1) < MODEL_SIZE)
-            category_training_descriptors = [ category_training_descriptors ; ALLFEAT(i,:) ];
-        else
-            test_descriptors = [ test_descriptors ; ALLFEAT(i,:) ];
-            test_categories = [ test_categories ; ALLCATs(i) ];
-        end
-    end
+    %% 2) Pick an image at random to be the query
+    queryimg=QUERY_INDEXES(iteration);    % index of a random image
     
-    [eig_vct, eig_val, model_mean] = getEigenModel(category_training_descriptors);
+    %% 3) Compute EigenModel
+    E = getEigenModel(ALLFEAT);
+    E = deflateEigen(E, 2);
     
-    TEST_SIZE = size(test_descriptors,1);
-    
+    %% 4) Project data to lower dimensionality
+%     ALLFEAT=ALLFEAT-repmat(E.org,size(ALLFEAT,1),1);
+    ALLFEAT=((E.vct')*(ALLFEAT'))';
+
     %% 3) Compute the distance of image to the query
     dst=[];
-    for i=1:TEST_SIZE
-        candidate=test_descriptors(i,:);
-        category=test_categories(i);
+    for i=1:NIMG
+        candidate=ALLFEAT(i,:);
+        query=ALLFEAT(queryimg,:);
+
+        category=ALLCATs(i);
 
         %% COMPARE FUNCTION
-        thedst=compareMahalanobis(eig_vct, eig_val, model_mean, candidate);
+        thedst=compareMahalanobis(E, ALLFEAT, query);
         dst=[dst ; [thedst i category]];
     end
     dst=sortrows(dst,1);  % sort the results
 
     %% 4) Calculate PR
-    precision_values=zeros([1, TEST_SIZE]);
-    recall_values=zeros([1, TEST_SIZE]);
+    precision_values=zeros([1, NIMG]);
+    recall_values=zeros([1, NIMG]);
 
-    correct_at_n=zeros([1, TEST_SIZE]);
+    correct_at_n=zeros([1, NIMG]);
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
-    fprintf('category was %s, %i, %i\n', CATEGORIES(query_category), query_category, iterating_category)
+    if query_category ~= iteration
+        dst
+    end
+    fprintf('category was %s\n', CATEGORIES(query_category))
     
     
     %calculate PR for each n
-    for i=1:TEST_SIZE
+    for i=1:NIMG
 
         rows = dst(1:i, :);
 
@@ -145,7 +148,7 @@ for iterating_category=1:CAT_TOTAL
                 row = rows(n, :);
                 category = row(3);
 
-                if category == query_category
+                if category == iteration
                     correct_results = correct_results + 1;
                 else
                     incorrect_results = incorrect_results + 1;
@@ -158,7 +161,7 @@ for iterating_category=1:CAT_TOTAL
         row = rows(i, :);
         category = row(3);
 
-        if category == query_category
+        if category == iteration
             correct_results = correct_results + 1;
             correct_at_n(i) = 1;
         else
@@ -166,7 +169,7 @@ for iterating_category=1:CAT_TOTAL
         end
 
         precision = correct_results / i;
-        recall = correct_results / CAT_HIST(1,query_category);
+        recall = correct_results / CAT_HIST(1,iteration);
 
         precision_values(i) = precision;
         recall_values(i) = recall;
@@ -174,8 +177,8 @@ for iterating_category=1:CAT_TOTAL
 
 
     %% 5) calculate AP
-    P_rel_n = zeros([1, TEST_SIZE]);
-    for i = 1:TEST_SIZE
+    P_rel_n = zeros([1, NIMG]);
+    for i = 1:NIMG
         precision = precision_values(i);
         i_result_relevant = correct_at_n(i);
 
@@ -183,9 +186,9 @@ for iterating_category=1:CAT_TOTAL
     end
 
     sum_P_rel_n = sum(P_rel_n);
-    average_precision = sum_P_rel_n / CAT_HIST(1,query_category);
+    average_precision = sum_P_rel_n / CAT_HIST(1,iteration)
     
-    AP_values(iterating_category) = average_precision;
+    AP_values(iteration) = average_precision;
     
 
 
@@ -202,7 +205,7 @@ for iterating_category=1:CAT_TOTAL
     %% These may be a little hard to see using imgshow
     %% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
     
-    SHOW=20; % Show top 15 results
+    SHOW=25; % Show top 25 results
     dst=dst(1:SHOW,:);
     outdisplay=[];
     for i=1:size(dst,1)

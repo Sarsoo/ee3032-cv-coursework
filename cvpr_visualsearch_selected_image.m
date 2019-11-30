@@ -27,10 +27,10 @@ DATASET_FOLDER = 'dataset';
 DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
-DESCRIPTOR_SUBFOLDER='avgRGB';
+% DESCRIPTOR_SUBFOLDER='avgRGB';
 % DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
-% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -53,6 +53,11 @@ CATEGORIES = ["Farm Animal"
     "Human Figures"
     "Coast"
     ];
+
+QUERY_INDEXES=[301 358 384 436 447 476 509 537 572 5 61 80 97 127 179 181 217 266 276 333];
+
+% 1_10 2_16 3_12 4_4 5_15 6_14 7_17 8_15 9_1 10_14 11_8 12_26 13_10 14_10
+% 15_8 16_10 17_16 18_5 19_15 20_12
 
 
 %% 1) Load all the descriptors into "ALLFEAT"
@@ -92,7 +97,7 @@ AP_values = zeros([1, CAT_TOTAL]);
 for iteration=1:CAT_TOTAL
     
     %% 2) Pick an image at random to be the query
-    queryimg=getRandomCategoryImage(iteration);    % index of a random image
+    queryimg=QUERY_INDEXES(iteration);    % index of a random image
 
     %% 3) Compute the distance of image to the query
     dst=[];
@@ -107,7 +112,7 @@ for iteration=1:CAT_TOTAL
         dst=[dst ; [thedst i category]];
     end
     dst=sortrows(dst,1);  % sort the results
-    
+
     %% 4) Calculate PR
     precision_values=zeros([1, NIMG]);
     recall_values=zeros([1, NIMG]);
@@ -120,6 +125,7 @@ for iteration=1:CAT_TOTAL
         dst
     end
     fprintf('category was %s\n', CATEGORIES(query_category))
+    
     
     %calculate PR for each n
     for i=1:NIMG
@@ -172,7 +178,7 @@ for iteration=1:CAT_TOTAL
     end
 
     sum_P_rel_n = sum(P_rel_n);
-    average_precision = sum_P_rel_n / CAT_HIST(1,iteration)
+    average_precision = sum_P_rel_n / CAT_HIST(1,iteration);
     
     AP_values(iteration) = average_precision;
     

@@ -601,8 +601,14 @@ Where
  refers to the number of edge histogram bins.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Principal Component Analysis
+\end_layout
+
+\begin_layout Standard
+Principal component analysis is a process to identify the variations in
+ a set of data.
+ The result is a 
 \end_layout
 
 \begin_layout Section
@@ -824,38 +830,27 @@ Category Response
 \begin_layout Standard
 The category response aims to control for a descriptor's varying performance
  at each of the dataset's categories by looping through each category and
- randomly selecting an image from each as the query image.
+ using a preselected image from each as the query image.
  Each category iteration has precision and recall values calculated for
  all 
 \begin_inset Formula $n$
 \end_inset
 
  to allow the mean average precision to be calculated.
- This mean value is calculated from 20 iterations for the MSRCv2 dataset.
+ This mean value is calculated from the 20 category iterations for the MSRCv2
+ dataset.
 \end_layout
 
 \begin_layout Standard
 Completing one iteration for each category also allows a confusion matrix
  to be constructed.
- For each iteration the top 20 results were evaluated, this number was chosen
- as this is approximately the mean number of images in each category.
- 
+ For each iteration the top 25 results were evaluated, this number was chosen
+ as this is approximately the mean category size.
 \end_layout
 
 \begin_layout Standard
 The completed confusion matrix allows the main category confusions to be
  identified and discussions to be made.
-\end_layout
-
-\begin_layout Subsubsection
-Random Response
-\end_layout
-
-\begin_layout Standard
-The random response places emphasis on iteration over controlling for inter-cate
-gory response.
- Here query images are selected at random from the entire dataset and many
- iterations are run in order to identify a mean response.
 \end_layout
 
 \begin_layout Section
