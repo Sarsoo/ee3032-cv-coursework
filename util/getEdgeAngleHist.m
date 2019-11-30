@@ -19,7 +19,7 @@ for i = 1:rows
 end
 
 if size(vals, 2) == 0
-    F = zeros(1, bins)
+    F = zeros(1, bins);
 else
     F= histogram(vals, bins, 'Normalization', 'probability').Values;
 end

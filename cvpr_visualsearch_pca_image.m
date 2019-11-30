@@ -27,10 +27,10 @@ DATASET_FOLDER = 'dataset';
 DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
-DESCRIPTOR_SUBFOLDER='avgRGB';
+% DESCRIPTOR_SUBFOLDER='avgRGB';
 % DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
-% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -101,10 +101,10 @@ for iteration=1:CAT_TOTAL
     
     %% 3) Compute EigenModel
     E = getEigenModel(ALLFEAT);
-    E = deflateEigen(E, 2);
+    E = deflateEigen(E, 12);
     
     %% 4) Project data to lower dimensionality
-%     ALLFEAT=ALLFEAT-repmat(E.org,size(ALLFEAT,1),1);
+    ALLFEAT=ALLFEAT-repmat(E.org,size(ALLFEAT,1),1);
     ALLFEAT=((E.vct')*(ALLFEAT'))';
 
     %% 3) Compute the distance of image to the query
@@ -116,7 +116,7 @@ for iteration=1:CAT_TOTAL
         category=ALLCATs(i);
 
         %% COMPARE FUNCTION
-        thedst=compareMahalanobis(E, ALLFEAT, query);
+        thedst=compareMahalanobis(E, query, candidate);
         dst=[dst ; [thedst i category]];
     end
     dst=sortrows(dst,1);  % sort the results
@@ -133,7 +133,6 @@ for iteration=1:CAT_TOTAL
         dst
     end
     fprintf('category was %s\n', CATEGORIES(query_category))
-    
     
     %calculate PR for each n
     for i=1:NIMG
