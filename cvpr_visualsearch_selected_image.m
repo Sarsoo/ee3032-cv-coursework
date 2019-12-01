@@ -28,10 +28,10 @@ DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
 % DESCRIPTOR_SUBFOLDER='avgRGB';
-DESCRIPTOR_SUBFOLDER='globalRGBhisto';
+% DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
 % DESCRIPTOR_SUBFOLDER='spatialTexture';
-% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -221,7 +221,7 @@ figure(4)
 mean_precision = mean(all_precision);
 mean_recall = mean(all_recall);
 plot(mean_recall, mean_precision,'LineWidth',5);
-title('Global Colour Histogram Average PR (n=5)');
+title('Spatial Texture Average PR (4x4, bin=7, thresh.=0.09)');
 xlabel('Average Recall');
 ylabel('Average Precision');
 xlim([0 1]);

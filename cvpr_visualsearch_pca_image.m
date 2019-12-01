@@ -28,10 +28,10 @@ DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
 % DESCRIPTOR_SUBFOLDER='avgRGB';
-DESCRIPTOR_SUBFOLDER='globalRGBhisto';
+% DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
 % DESCRIPTOR_SUBFOLDER='spatialTexture';
-% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -92,6 +92,14 @@ CAT_TOTAL = length(CAT_HIST);
 
 NIMG=size(ALLFEAT,1);           % number of images in collection
 
+
+
+map=[];
+deflate_energy = [0:0.001:0.3];
+for var_iter=1:size(deflate_energy, 2)
+    
+descriptor_list = ALLFEAT;
+
 confusion_matrix = zeros(CAT_TOTAL);
 
 all_precision = [];
@@ -104,18 +112,18 @@ for iteration=1:CAT_TOTAL
     queryimg=QUERY_INDEXES(iteration);    % index of a random image
     
     %% 3) Compute EigenModel
-    E = getEigenModel(ALLFEAT);
-    E = deflateEigen(E, 3);
+    E = getEigenModel(descriptor_list);
+    E = deflateEigen(E, 1-deflate_energy(var_iter));
     
     %% 4) Project data to lower dimensionality
-    ALLFEAT=ALLFEAT-repmat(E.org,size(ALLFEAT,1),1);
-    ALLFEAT=((E.vct')*(ALLFEAT'))';
+    descriptor_list=descriptor_list-repmat(E.org,size(descriptor_list,1),1);
+    descriptor_list=((E.vct')*(descriptor_list'))';
 
     %% 3) Compute the distance of image to the query
     dst=[];
     for i=1:NIMG
-        candidate=ALLFEAT(i,:);
-        query=ALLFEAT(queryimg,:);
+        candidate=descriptor_list(i,:);
+        query=descriptor_list(queryimg,:);
 
         category=ALLCATs(i);
 
@@ -133,9 +141,9 @@ for iteration=1:CAT_TOTAL
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
-    if query_category ~= iteration
-        dst
-    end
+%     if query_category ~= iteration
+%         dst
+%     end
     fprintf('category was %s\n', CATEGORIES(query_category))
     
     dst = dst(2:NIMG, :);
@@ -192,32 +200,32 @@ for iteration=1:CAT_TOTAL
     
 
     %% 6) plot PR curve
-    figure(1)
-    plot(recall_values, precision_values,'LineWidth',1.5);
-    hold on;
-    title('PR Curve');
-    xlabel('Recall');
-    ylabel('Precision');
-    xlim([0 1]);
-    ylim([0 1]);
+%     figure(1)
+%     plot(recall_values, precision_values,'LineWidth',1.5);
+%     hold on;
+%     title('PR Curve');
+%     xlabel('Recall');
+%     ylabel('Precision');
+%     xlim([0 1]);
+%     ylim([0 1]);
     
     
     %% 7) Visualise the results
     %% These may be a little hard to see using imgshow
     %% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
     
-    SHOW=25; % Show top 25 results
-    dst=dst(1:SHOW,:);
-    outdisplay=[];
-    for i=1:size(dst,1)
-       img=imread(ALLFILES{dst(i,2)});
-       img=img(1:2:end,1:2:end,:); % make image a quarter size
-       img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
-       outdisplay=[outdisplay img];
-       
-       %populate confusion matrix
-       confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
-    end
+%     SHOW=25; % Show top 25 results
+%     dst=dst(1:SHOW,:);
+%     outdisplay=[];
+%     for i=1:size(dst,1)
+%        img=imread(ALLFILES{dst(i,2)});
+%        img=img(1:2:end,1:2:end,:); % make image a quarter size
+%        img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
+%        outdisplay=[outdisplay img];
+%        
+%        %populate confusion matrix
+%        confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
+%     end
 %     figure(3)
 %     imgshow(outdisplay);
 %     axis off;
@@ -225,18 +233,18 @@ for iteration=1:CAT_TOTAL
 end
 
 %% Plot average PR curve
-figure(4)
-mean_precision = mean(all_precision);
-mean_recall = mean(all_recall);
-plot(mean_recall, mean_precision,'LineWidth',5);
-title('PR Curve');
-xlabel('Average Recall');
-ylabel('Average Precision');
-xlim([0 1]);
-ylim([0 1]);
+% figure(4)
+% mean_precision = mean(all_precision);
+% mean_recall = mean(all_recall);
+% plot(mean_recall, mean_precision,'LineWidth',5);
+% title('PR Curve');
+% xlabel('Average Recall');
+% ylabel('Average Precision');
+% xlim([0 1]);
+% ylim([0 1]);
 
 % normalise confusion matrix
-norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
+% norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
 
 %% 8 Calculate MAP
 % figure(4)
@@ -247,10 +255,14 @@ norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
 % xlim([0, 1]);
 
 MAP = mean(AP_values)
-AP_sd = std(AP_values)
+% AP_sd = std(AP_values);
 
 % figure(2)
 % plot(1:CAT_TOTAL, AP_values);
 % title('Average Precision Per Run');
 % xlabel('Run');
 % ylabel('Average Precision');
+
+map(var_iter) = MAP;
+
+end

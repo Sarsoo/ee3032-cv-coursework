@@ -25,12 +25,6 @@ DATASET_FOLDER = 'dataset';
 
 %% Folder that holds the results...
 DESCRIPTOR_FOLDER = 'descriptors';
-%% and within that folder, another folder to hold the descriptors
-%% we are interested in working with
-% DESCRIPTOR_SUBFOLDER='avgRGB';
-% DESCRIPTOR_SUBFOLDER='globalRGBhisto';
-DESCRIPTOR_SUBFOLDER='spatialColour';
-% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -61,10 +55,8 @@ QUERY_INDEXES=[301 358 384 436 447 476 509 537 572 5 61 80 97 127 179 181 217 26
 
 map = [];
 
-thresholded = [0.01:0.01:0.15];
-
-for b=1:15
-%     for c=1:10
+for r=9:9
+    for c=1:8
 
 %% 1) Load all the descriptors into "ALLFEAT"
 %% each row of ALLFEAT is a descriptor (is an image)
@@ -72,7 +64,6 @@ for b=1:15
 ALLFEAT=[];
 ALLFILES=cell(1,0);
 ALLCATs=[];
-ctr=1;
 
 allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
 for filenum=1:length(allfiles)
@@ -89,9 +80,9 @@ for filenum=1:length(allfiles)
     %% EXTRACT FUNCTION
 %     F=extractAvgRGB(img);
 %     F=extractGlobalColHist(img);
-%     F = extractSpatialColour(img, b, c);
-    F=extractSpatialTexture(img, 4, 4, 7, thresholded(1,b));
-%     F=extractSpatialColourTexture(img, b, c, 8, 0.08);
+%     F=extractSpatialColour(img, r, c);
+    F=extractSpatialTexture(img, r, c, 7, 0.09);
+%     F=extractSpatialColourTexture(img, r, c, 7, 0.09);
 %     toc
     
     ALLFEAT=[ALLFEAT ; F];
@@ -139,7 +130,7 @@ for iteration=1:CAT_TOTAL
 %     if query_category ~= iteration
 %         dst
 %     end
-    fprintf('category was %s\n', CATEGORIES(query_category))
+%     fprintf('category was %s\n', CATEGORIES(query_category))
     
     dst = dst(2:NIMG, :);
        
@@ -209,18 +200,18 @@ for iteration=1:CAT_TOTAL
     %% These may be a little hard to see using imgshow
     %% If you have access, try using imshow(outdisplay) or imagesc(outdisplay)
     
-    SHOW=25; % Show top 25 results
-    dst=dst(1:SHOW,:);
-    outdisplay=[];
-    for i=1:size(dst,1)
-%        img=imread(ALLFILES{dst(i,2)});
-%        img=img(1:2:end,1:2:end,:); % make image a quarter size
-%        img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
-%        outdisplay=[outdisplay img];
-       
-       %populate confusion matrix
-       confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
-    end
+%     SHOW=25; % Show top 25 results
+%     dst=dst(1:SHOW,:);
+%     outdisplay=[];
+%     for i=1:size(dst,1)
+% %        img=imread(ALLFILES{dst(i,2)});
+% %        img=img(1:2:end,1:2:end,:); % make image a quarter size
+% %        img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
+% %        outdisplay=[outdisplay img];
+%        
+%        %populate confusion matrix
+%        confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
+%     end
 %     figure(3)
 %     imgshow(outdisplay);
 %     axis off;
@@ -239,7 +230,7 @@ end
 % ylim([0 1]);
 
 % normalise confusion matrix
-norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
+% norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
 
 %% 8 Calculate MAP
 % figure(4)
@@ -249,8 +240,8 @@ norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
 % xlabel('Average Precision');
 % xlim([0, 1]);
 
-MAP = mean(AP_values)
-AP_sd = std(AP_values)
+MAP = mean(AP_values);
+% AP_sd = std(AP_values)
 
 % figure(2)
 % plot(1:CAT_TOTAL, AP_values);
@@ -258,11 +249,11 @@ AP_sd = std(AP_values)
 % xlabel('Run');
 % ylabel('Average Precision');
 
-% fprintf('%i,%i %i', b, c, MAP);
-fprintf('%i,%i', b, MAP);
+fprintf('%i,%i %i\n', r, c, MAP);
+% fprintf('%i,%i\n', r, MAP);
 
-% map(b, c) = MAP;
-map(b) = MAP;
+map(r, c) = MAP;
+% map(b) = MAP;
 
-%     end
+    end
 end
