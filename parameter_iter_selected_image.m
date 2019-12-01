@@ -61,8 +61,10 @@ QUERY_INDEXES=[301 358 384 436 447 476 509 537 572 5 61 80 97 127 179 181 217 26
 
 map = [];
 
-for b=1:3
-    for c=1:3
+thresholded = [0.01:0.01:0.15];
+
+for b=1:15
+%     for c=1:10
 
 %% 1) Load all the descriptors into "ALLFEAT"
 %% each row of ALLFEAT is a descriptor (is an image)
@@ -71,23 +73,6 @@ ALLFEAT=[];
 ALLFILES=cell(1,0);
 ALLCATs=[];
 ctr=1;
-% allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
-% for filenum=1:length(allfiles)
-%     fname=allfiles(filenum).name;
-%     
-%     %identify photo category for PR calculation
-%     split_string = split(fname, '_');
-%     ALLCATs(filenum) = str2double(split_string(1));
-%     
-%     imgfname_full=([DATASET_FOLDER,'/Images/',fname]);
-%     img=double(imread(imgfname_full))./255;
-%     thesefeat=[];
-%     featfile=[DESCRIPTOR_FOLDER,'/',DESCRIPTOR_SUBFOLDER,'/',fname(1:end-4),'.mat'];%replace .bmp with .mat
-%     load(featfile,'F');
-%     ALLFILES{ctr}=imgfname_full;
-%     ALLFEAT=[ALLFEAT ; F];
-%     ctr=ctr+1;
-% end
 
 allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
 for filenum=1:length(allfiles)
@@ -104,8 +89,9 @@ for filenum=1:length(allfiles)
     %% EXTRACT FUNCTION
 %     F=extractAvgRGB(img);
 %     F=extractGlobalColHist(img);
-    F = extractSpatialColour(img, b, c);
-%     F=extractSpatialColourTexture(img);
+%     F = extractSpatialColour(img, b, c);
+    F=extractSpatialTexture(img, 4, 4, 7, thresholded(1,b));
+%     F=extractSpatialColourTexture(img, b, c, 8, 0.08);
 %     toc
     
     ALLFEAT=[ALLFEAT ; F];
@@ -150,9 +136,9 @@ for iteration=1:CAT_TOTAL
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
-    if query_category ~= iteration
-        dst
-    end
+%     if query_category ~= iteration
+%         dst
+%     end
     fprintf('category was %s\n', CATEGORIES(query_category))
     
     dst = dst(2:NIMG, :);
@@ -272,9 +258,11 @@ AP_sd = std(AP_values)
 % xlabel('Run');
 % ylabel('Average Precision');
 
-fprintf('%i,%i %i', b, c, MAP);
+% fprintf('%i,%i %i', b, c, MAP);
+fprintf('%i,%i', b, MAP);
 
-map(b, c) = MAP;
+% map(b, c) = MAP;
+map(b) = MAP;
 
-    end
+%     end
 end

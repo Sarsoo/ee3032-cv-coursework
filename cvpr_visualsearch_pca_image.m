@@ -30,6 +30,7 @@ DESCRIPTOR_FOLDER = 'descriptors';
 % DESCRIPTOR_SUBFOLDER='avgRGB';
 DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
+% DESCRIPTOR_SUBFOLDER='spatialTexture';
 % DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 

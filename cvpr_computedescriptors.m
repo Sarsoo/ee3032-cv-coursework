@@ -25,6 +25,7 @@ OUT_FOLDER = 'descriptors';
 % OUT_SUBFOLDER='avgRGB';
 OUT_SUBFOLDER='globalRGBhisto';
 % OUT_SUBFOLDER='spatialColour';
+% DESCRIPTOR_SUBFOLDER='spatialTexture';
 % OUT_SUBFOLDER='spatialColourTexture';
 
 allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
@@ -38,8 +39,9 @@ for filenum=1:length(allfiles)
     
     %% EXTRACT FUNCTION
 %     F=extractAvgRGB(img);
-    F=extractGlobalColHist(img);
+    F=extractGlobalColHist(img, 2, 1, 8, 0.05);
 %     F=extractSpatialColour(img, 2, 1);
+%     F=extractSpatialTexture(img, 2, 1, 8, 0.05);
 %     F=extractSpatialColourTexture(img);
     save(fout,'F');
     toc
