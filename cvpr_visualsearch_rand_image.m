@@ -163,17 +163,7 @@ for iteration=1:CAT_TOTAL
 
 
     %% 5) calculate AP
-    P_rel_n = zeros([1, NIMG]);
-    for i = 1:NIMG
-        precision = precision_values(i);
-        i_result_relevant = correct_at_n(i);
-
-        P_rel_n(i) = precision * i_result_relevant;
-    end
-
-    sum_P_rel_n = sum(P_rel_n);
-    average_precision = sum_P_rel_n / CAT_HIST(1,iteration)
-    
+    average_precision = sum(precision_values .* correct_at_n) / CAT_HIST(1,iteration);
     AP_values(iteration) = average_precision;
     
 

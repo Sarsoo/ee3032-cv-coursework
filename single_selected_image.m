@@ -28,8 +28,8 @@ DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
 % DESCRIPTOR_SUBFOLDER='avgRGB';
-DESCRIPTOR_SUBFOLDER='globalRGBhisto';
-% DESCRIPTOR_SUBFOLDER='spatialColour';
+% DESCRIPTOR_SUBFOLDER='globalRGBhisto';
+DESCRIPTOR_SUBFOLDER='spatialColour';
 % DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
@@ -59,6 +59,10 @@ QUERY_INDEXES=[301 358 384 436 447 476 509 537 572 5 61 80 97 127 179 181 217 26
 % 1_10 2_16 3_12 4_4 5_15 6_14 7_17 8_15 9_1 10_14 11_8 12_26 13_10 14_10
 % 15_8 16_10 17_16 18_5 19_15 20_12
 
+map = [];
+
+for b=1:3
+    for c=1:3
 
 %% 1) Load all the descriptors into "ALLFEAT"
 %% each row of ALLFEAT is a descriptor (is an image)
@@ -67,24 +71,46 @@ ALLFEAT=[];
 ALLFILES=cell(1,0);
 ALLCATs=[];
 ctr=1;
+% allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
+% for filenum=1:length(allfiles)
+%     fname=allfiles(filenum).name;
+%     
+%     %identify photo category for PR calculation
+%     split_string = split(fname, '_');
+%     ALLCATs(filenum) = str2double(split_string(1));
+%     
+%     imgfname_full=([DATASET_FOLDER,'/Images/',fname]);
+%     img=double(imread(imgfname_full))./255;
+%     thesefeat=[];
+%     featfile=[DESCRIPTOR_FOLDER,'/',DESCRIPTOR_SUBFOLDER,'/',fname(1:end-4),'.mat'];%replace .bmp with .mat
+%     load(featfile,'F');
+%     ALLFILES{ctr}=imgfname_full;
+%     ALLFEAT=[ALLFEAT ; F];
+%     ctr=ctr+1;
+% end
+
 allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
 for filenum=1:length(allfiles)
     fname=allfiles(filenum).name;
+%     fprintf('Processing file %d/%d - %s\n',filenum,length(allfiles),fname);
+%     tic;
+    imgfname_full=([DATASET_FOLDER,'/Images/',fname]);
+    img=double(imread(imgfname_full))./255;
     
     %identify photo category for PR calculation
     split_string = split(fname, '_');
     ALLCATs(filenum) = str2double(split_string(1));
     
-    imgfname_full=([DATASET_FOLDER,'/Images/',fname]);
-    img=double(imread(imgfname_full))./255;
-    thesefeat=[];
-    featfile=[DESCRIPTOR_FOLDER,'/',DESCRIPTOR_SUBFOLDER,'/',fname(1:end-4),'.mat'];%replace .bmp with .mat
-    load(featfile,'F');
-    ALLFILES{ctr}=imgfname_full;
+    %% EXTRACT FUNCTION
+%     F=extractAvgRGB(img);
+%     F=extractGlobalColHist(img);
+    F = extractSpatialColour(img, b, c);
+%     F=extractSpatialColourTexture(img);
+%     toc
+    
     ALLFEAT=[ALLFEAT ; F];
-    ctr=ctr+1;
 end
-
+    
 % get counts for each category for PR calculation
 CAT_HIST = histogram(ALLCATs).Values;
 CAT_TOTAL = length(CAT_HIST);
@@ -101,14 +127,6 @@ for iteration=1:CAT_TOTAL
     
     %% 2) Pick an image at random to be the query
     queryimg=QUERY_INDEXES(iteration);    % index of a random image
-    
-    %% 3) Compute EigenModel
-    E = getEigenModel(ALLFEAT);
-    E = deflateEigen(E, 3);
-    
-    %% 4) Project data to lower dimensionality
-    ALLFEAT=ALLFEAT-repmat(E.org,size(ALLFEAT,1),1);
-    ALLFEAT=((E.vct')*(ALLFEAT'))';
 
     %% 3) Compute the distance of image to the query
     dst=[];
@@ -119,7 +137,7 @@ for iteration=1:CAT_TOTAL
         category=ALLCATs(i);
 
         %% COMPARE FUNCTION
-        thedst=compareMahalanobis(E, query, candidate);
+        thedst=compareEuclidean(query, candidate);
         dst=[dst ; [thedst i category]];
     end
     dst=sortrows(dst,1);  % sort the results
@@ -138,17 +156,17 @@ for iteration=1:CAT_TOTAL
     fprintf('category was %s\n', CATEGORIES(query_category))
     
     dst = dst(2:NIMG, :);
-    
+       
     %calculate PR for each n
     for i=1:size(dst, 1)
         % NIMG-1 and j iterator variable is in order to skip calculating for query image
-        
+
         rows = dst(1:i, :);
 
         correct_results = 0;
         incorrect_results = 0;
 
-        if i > 1    
+        if i > 1   
             for n=1:i - 1
                 row = rows(n, :);
                 category = row(3);
@@ -185,20 +203,20 @@ for iteration=1:CAT_TOTAL
     average_precision = sum(precision_values .* correct_at_n) / CAT_HIST(1,iteration);
     AP_values(iteration) = average_precision;
     
- 
+    
     all_precision = [all_precision ; precision_values];
     all_recall = [all_recall ; recall_values];
     
 
     %% 6) plot PR curve
-    figure(1)
-    plot(recall_values, precision_values,'LineWidth',1.5);
-    hold on;
-    title('PR Curve');
-    xlabel('Recall');
-    ylabel('Precision');
-    xlim([0 1]);
-    ylim([0 1]);
+%     figure(1)
+%     plot(recall_values, precision_values,'LineWidth',1.5);
+%     hold on;
+%     title('Global Colour Histogram PR (n=20)');
+%     xlabel('Recall');
+%     ylabel('Precision');
+%     xlim([0 1]);
+%     ylim([0 1]);
     
     
     %% 7) Visualise the results
@@ -209,10 +227,10 @@ for iteration=1:CAT_TOTAL
     dst=dst(1:SHOW,:);
     outdisplay=[];
     for i=1:size(dst,1)
-       img=imread(ALLFILES{dst(i,2)});
-       img=img(1:2:end,1:2:end,:); % make image a quarter size
-       img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
-       outdisplay=[outdisplay img];
+%        img=imread(ALLFILES{dst(i,2)});
+%        img=img(1:2:end,1:2:end,:); % make image a quarter size
+%        img=img(1:81,:,:); % crop image to uniform size vertically (some MSVC images are different heights)
+%        outdisplay=[outdisplay img];
        
        %populate confusion matrix
        confusion_matrix(query_category, dst(i,3)) = confusion_matrix(query_category, dst(i,3)) + 1;
@@ -224,15 +242,15 @@ for iteration=1:CAT_TOTAL
 end
 
 %% Plot average PR curve
-figure(4)
-mean_precision = mean(all_precision);
-mean_recall = mean(all_recall);
-plot(mean_recall, mean_precision,'LineWidth',5);
-title('PR Curve');
-xlabel('Average Recall');
-ylabel('Average Precision');
-xlim([0 1]);
-ylim([0 1]);
+% figure(4)
+% mean_precision = mean(all_precision);
+% mean_recall = mean(all_recall);
+% plot(mean_recall, mean_precision,'LineWidth',5);
+% title('Global Colour Histogram Average PR (n=20)');
+% xlabel('Average Recall');
+% ylabel('Average Precision');
+% xlim([0 1]);
+% ylim([0 1]);
 
 % normalise confusion matrix
 norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');
@@ -253,3 +271,10 @@ AP_sd = std(AP_values)
 % title('Average Precision Per Run');
 % xlabel('Run');
 % ylabel('Average Precision');
+
+fprintf('%i,%i %i', b, c, MAP);
+
+map(b, c) = MAP;
+
+    end
+end

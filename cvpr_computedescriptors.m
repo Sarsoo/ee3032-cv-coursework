@@ -22,8 +22,8 @@ OUT_FOLDER = 'descriptors';
 %% and within that folder, create another folder to hold these descriptors
 %% the idea is all your descriptors are in individual folders - within
 %% the folder specified as 'OUT_FOLDER'.
-OUT_SUBFOLDER='avgRGB';
-% OUT_SUBFOLDER='globalRGBhisto';
+% OUT_SUBFOLDER='avgRGB';
+OUT_SUBFOLDER='globalRGBhisto';
 % OUT_SUBFOLDER='spatialColour';
 % OUT_SUBFOLDER='spatialColourTexture';
 
@@ -37,9 +37,9 @@ for filenum=1:length(allfiles)
     fout=[OUT_FOLDER,'/',OUT_SUBFOLDER,'/',fname(1:end-4),'.mat'];%replace .bmp with .mat
     
     %% EXTRACT FUNCTION
-    F=extractAvgRGB(img);
-%     F=extractGlobalColHist(img);
-%     F=extractSpatialColour(img);
+%     F=extractAvgRGB(img);
+    F=extractGlobalColHist(img);
+%     F=extractSpatialColour(img, 2, 1);
 %     F=extractSpatialColourTexture(img);
     save(fout,'F');
     toc

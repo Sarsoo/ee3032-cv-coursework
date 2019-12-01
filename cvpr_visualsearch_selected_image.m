@@ -28,9 +28,9 @@ DESCRIPTOR_FOLDER = 'descriptors';
 %% and within that folder, another folder to hold the descriptors
 %% we are interested in working with
 % DESCRIPTOR_SUBFOLDER='avgRGB';
-% DESCRIPTOR_SUBFOLDER='globalRGBhisto';
+DESCRIPTOR_SUBFOLDER='globalRGBhisto';
 % DESCRIPTOR_SUBFOLDER='spatialColour';
-DESCRIPTOR_SUBFOLDER='spatialColourTexture';
+% DESCRIPTOR_SUBFOLDER='spatialColourTexture';
 
 CATEGORIES = ["Farm Animal" 
     "Tree"
@@ -93,6 +93,9 @@ NIMG=size(ALLFEAT,1);           % number of images in collection
 
 confusion_matrix = zeros(CAT_TOTAL);
 
+all_precision = [];
+all_recall = [];
+
 AP_values = zeros([1, CAT_TOTAL]);
 for iteration=1:CAT_TOTAL
     
@@ -114,10 +117,10 @@ for iteration=1:CAT_TOTAL
     dst=sortrows(dst,1);  % sort the results
 
     %% 4) Calculate PR
-    precision_values=zeros([1, NIMG]);
-    recall_values=zeros([1, NIMG]);
+    precision_values=zeros([1, NIMG-1]);
+    recall_values=zeros([1, NIMG-1]);
 
-    correct_at_n=zeros([1, NIMG]);
+    correct_at_n=zeros([1, NIMG-1]);
 
     query_row = dst(1,:);
     query_category = query_row(1,3);
@@ -126,16 +129,18 @@ for iteration=1:CAT_TOTAL
     end
     fprintf('category was %s\n', CATEGORIES(query_category))
     
-    
+    dst = dst(2:NIMG, :);
+       
     %calculate PR for each n
-    for i=1:NIMG
+    for i=1:size(dst, 1)
+        % NIMG-1 and j iterator variable is in order to skip calculating for query image
 
         rows = dst(1:i, :);
 
         correct_results = 0;
         incorrect_results = 0;
 
-        if i > 1    
+        if i > 1   
             for n=1:i - 1
                 row = rows(n, :);
                 category = row(3);
@@ -161,7 +166,7 @@ for iteration=1:CAT_TOTAL
         end
 
         precision = correct_results / i;
-        recall = correct_results / CAT_HIST(1,iteration);
+        recall = correct_results / (CAT_HIST(1,iteration) - 1);
 
         precision_values(i) = precision;
         recall_values(i) = recall;
@@ -169,28 +174,23 @@ for iteration=1:CAT_TOTAL
 
 
     %% 5) calculate AP
-    P_rel_n = zeros([1, NIMG]);
-    for i = 1:NIMG
-        precision = precision_values(i);
-        i_result_relevant = correct_at_n(i);
-
-        P_rel_n(i) = precision * i_result_relevant;
-    end
-
-    sum_P_rel_n = sum(P_rel_n);
-    average_precision = sum_P_rel_n / CAT_HIST(1,iteration);
-    
+    average_precision = sum(precision_values .* correct_at_n) / CAT_HIST(1,iteration);
     AP_values(iteration) = average_precision;
     
-
+    
+    all_precision = [all_precision ; precision_values];
+    all_recall = [all_recall ; recall_values];
+    
 
     %% 6) plot PR curve
-    figure(1)
-    plot(recall_values, precision_values);
-    hold on;
-    title('PR Curve');
-    xlabel('Recall');
-    ylabel('Precision');
+%     figure(1)
+%     plot(recall_values, precision_values,'LineWidth',1.5);
+%     hold on;
+%     title('Global Colour Histogram PR (n=20)');
+%     xlabel('Recall');
+%     ylabel('Precision');
+%     xlim([0 1]);
+%     ylim([0 1]);
     
     
     %% 7) Visualise the results
@@ -214,6 +214,17 @@ for iteration=1:CAT_TOTAL
 %     axis off;
 
 end
+
+%% Plot average PR curve
+figure(4)
+mean_precision = mean(all_precision);
+mean_recall = mean(all_recall);
+plot(mean_recall, mean_precision,'LineWidth',5);
+title('Global Colour Histogram Average PR (n=5)');
+xlabel('Average Recall');
+ylabel('Average Precision');
+xlim([0 1]);
+ylim([0 1]);
 
 % normalise confusion matrix
 norm_confusion_matrix = confusion_matrix ./ sum(confusion_matrix, 'all');

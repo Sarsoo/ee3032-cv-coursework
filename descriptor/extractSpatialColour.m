@@ -1,7 +1,4 @@
-function F=extractSpatialColour(img)
-
-grid_rows = 10;
-grid_columns = 10;
+function F=extractSpatialColour(img, grid_rows, grid_columns)
 
 img_size = size(img);
 img_rows = img_size(1);
