@@ -1094,7 +1094,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/colourHistogram/pr-curves-n-5-avg.png
+	filename ../data/colourHistogram/pr-curves-n-5-avg.png
 	lyxscale 30
 	width 60col%
 
@@ -1135,7 +1135,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/colourHistogram/map-line.png
+	filename ../data/colourHistogram/map-line.png
 	lyxscale 30
 	width 80col%
 
@@ -1175,7 +1175,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/spatialColour/mapSurface2.png
+	filename ../data/spatialColour/mapSurface2.png
 	lyxscale 20
 	width 50col%
 
@@ -1183,7 +1183,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/spatialColour/mapSurfaceWithMax.png
+	filename ../data/spatialColour/mapSurfaceWithMax.png
 	lyxscale 20
 	width 50col%
 
@@ -1238,7 +1238,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/10_14_s.png
+	filename ../data/edgeThresholds/10_14_s.png
 	lyxscale 30
 	width 20col%
 
@@ -1250,7 +1250,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/10_14_flower_edge.png
+	filename ../data/edgeThresholds/10_14_flower_edge.png
 	lyxscale 30
 	width 20col%
 
@@ -1280,7 +1280,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/5_15_s.png
+	filename ../data/edgeThresholds/5_15_s.png
 	lyxscale 30
 	width 20col%
 
@@ -1292,7 +1292,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/5_15_cow_edge.png
+	filename ../data/edgeThresholds/5_15_cow_edge.png
 	lyxscale 30
 	width 20col%
 
@@ -1326,7 +1326,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/flower-t-0.01.png
+	filename ../data/edgeThresholds/flower-t-0.01.png
 	lyxscale 30
 	width 20col%
 
@@ -1338,7 +1338,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/cow-t-0.01.png
+	filename ../data/edgeThresholds/cow-t-0.01.png
 	lyxscale 30
 	width 20col%
 
@@ -1374,7 +1374,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/flower-t-0.08.png
+	filename ../data/edgeThresholds/flower-t-0.08.png
 	lyxscale 30
 	width 20col%
 
@@ -1386,7 +1386,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/cow-t-0.08.png
+	filename ../data/edgeThresholds/cow-t-0.08.png
 	lyxscale 30
 	width 20col%
 
@@ -1415,7 +1415,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/flower-t-0.2.png
+	filename ../data/edgeThresholds/flower-t-0.2.png
 	lyxscale 30
 	width 20col%
 
@@ -1427,7 +1427,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/edgeThresholds/cow-t-0.2.png
+	filename ../data/edgeThresholds/cow-t-0.2.png
 	lyxscale 30
 	width 20col%
 
@@ -1456,7 +1456,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/spatialTexture/map-bin-vary.png
+	filename ../data/spatialTexture/map-bin-vary.png
 	lyxscale 30
 	width 80col%
 
