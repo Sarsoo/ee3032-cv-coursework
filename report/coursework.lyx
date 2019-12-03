@@ -3431,8 +3431,18 @@ Conclusions
 \end_layout
 
 \begin_layout Standard
-To summarise, spatial texture techniques were found to perform better than
- exclusively colour based methods such as a global colour histogram.
+To summarise, each descriptor has varying efficacy for different applications
+ and the context should be identified before selecting one over the other.
+\end_layout
+
+\begin_layout Standard
+Optimum internal parameters for each are data and query dependedent but
+ well performing values can be obtained experimentally.
+\end_layout
+
+\begin_layout Standard
+Spatial texture techniques were found to perform better than exclusively
+ colour based methods such as a global colour histogram.
  While the combination of both colour and texture information didn't provide
  as much of an improvement over either separately as expected, the combination
  of both colour and texture information as part of the descriptor was the
@@ -3441,14 +3451,9 @@ To summarise, spatial texture techniques were found to perform better than
 
 \begin_layout Standard
 The use of appropriate amounts (approximately 2%) of dimensionality reduction
- following principal component analysis provided additional performance
- increases.
- 
-\end_layout
-
-\begin_layout Standard
-Following investigations into difference distance measures the L1 norm tended
- to be best performing method.
+ following principal component analysis provided performance increases over
+ the standard L2 norm, however following investigations into difference
+ distance measures the L1 norm tended to be best performing method.
 \end_layout
 
 \begin_layout Standard

@@ -1,7 +1,7 @@
 
 /data - pulled images and spreadsheet of data
 /descriptor - functions for extracting descriptors
-/distance - functions fo measuring distance between descriptors
+/distance - functions for measuring distance between descriptors
 /util - util functions such as toGreyscale and EVD
 
 There are two types of script, ones that run a category response once (cvpr_visualsearch_*) and ones that iteratively 
