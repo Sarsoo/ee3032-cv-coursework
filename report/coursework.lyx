@@ -106,7 +106,28 @@ Abstract
 \end_layout
 
 \begin_layout Standard
-abstract
+The efficacy of various descriptors for visual search was investigated by
+ applying them to the MSRCv2 dataset.
+ Descriptors of varying complexity were considered from the less discriminative
+ global colour histogram to spatial techniques that consider both colour
+ and shape information.
+ 
+\end_layout
+
+\begin_layout Standard
+Following these results the use of principal component analysis was used
+ to lower the dimensionality of descriptors and aid in extraction and processing.
+ The associated Mahalanobis distance tended to provide an improvement to
+ a standard Euclidean distance measure but the L1 generally outperformed
+ the both.
+\end_layout
+
+\begin_layout Standard
+Spatial texture techniques, specifically a combination of colour and texture,
+ were found to be the best performing with PCA providing extra performance
+ when applied to the correct degree.
+ Internal parameters were generally found not to increase performance linearly
+ but achieve a peak before degrading.
 \end_layout
 
 \begin_layout LyX-Code
@@ -131,15 +152,15 @@ Introduction
 
 \begin_layout Standard
 An application of computer vision and visual media processing is that of
- viusal search, the ability to quantitatively identify features of an image
+ visual search, the ability to quantitatively identify features of an image
  such that other images can be compared and ranked based on similarity.
 \end_layout
 
 \begin_layout Standard
 These measured features can be arranged as a data structure or descriptor
- and a visual search system can be composed of the extraction and comparison
+ and a visual search system can be created through the extraction and comparison
  of these descriptors.
- It is an example of content based image retrieval or CBIR.
+ This is an example of content based image retrieval or CBIR.
 \end_layout
 
 \begin_layout Standard
@@ -186,7 +207,7 @@ Average Colour
 
 \begin_layout Standard
 Average colour represents one of the most basic descriptors capable of being
- calculated about an image, an array of three numbers for the average red
+ calculated about an image, an array of three numbers for the average red,
  green and blue intensity values found in the image.
  
 \end_layout
@@ -196,8 +217,8 @@ These three numbers represent nothing about the distribution of colour throughou
 t the image and nothing regarding edge and shape information.
  The lack of either hinders it's practicality for real world applications
  and as a result it is not used as a descriptor on it's own in this paper.
- Instead average colour will be used as a sub-descriptor to form part of
- a spatial colour descriptor due to it's low dimensionality.
+ Instead average colour will be used as a sub-descriptor during spatial
+ colour investigations aided by its low dimensionality.
 \end_layout
 
 \begin_layout Subsection
@@ -211,7 +232,7 @@ A global colour histogram extracts colour distribution information from
 
 \begin_layout Standard
 Each pixel in an image can be plotted as a point in it's 3D colour space
- with the axes being red, green and blue intensity values for each pixel.
+ with the axes being red, green and blue intensity values.
  Visually inspecting this colour space will provide information about colour
  scattering found throughout the image.
  As different resolutions of images will produce datasets of different sizes
@@ -255,9 +276,9 @@ bin\:val=floor\left(q\cdotp\frac{val}{256}\right)\label{eq:integer-bin-calc}
 \end_layout
 
 \begin_layout Standard
-This allows each pixel to now be represented as a 3D point of three 'binned'
- values, a full RGB colour space has been reduced to three colour histrograms,
- one for each channel.
+This allows each pixel to now be represented as three 'binned' values, a
+ full RGB colour space has been reduced to three colour histograms, one
+ for each channel.
  In order to arrange this as a descriptor each point should be further reduced
  to a single number so that a global histogram can be formed of these values.
  This is done by taking decimal bin integers and concatenating them into
@@ -290,7 +311,7 @@ pixel\:bin=red\:bin\cdotp q^{2}+green\:bin\cdotp q^{1}+blue\:bin\cdotp q^{0}\lab
 
 \begin_layout Standard
 Calculating a histogram of each pixel's bin value will function as a descriptor
- for the image once normalised by count.
+ for the image once normalised.
  This normalisation will remove the effect of changing resolutions of image.
 \end_layout
 
@@ -299,8 +320,8 @@ Each descriptor plots an image as a point in a
 \begin_inset Formula $q^{3}$
 \end_inset
 
--dimensional feature space where similiarity can be computed using a suitable
- distance measure (L1 norm for example).
+-dimensional feature space where similarity can be computed using a suitable
+ distance measure (L2 norm for example).
 \end_layout
 
 \begin_layout Subsubsection
@@ -331,17 +352,17 @@ Spatial Colour
 \end_layout
 
 \begin_layout Standard
-Spatial techniques involve calculating descriptors that are discriminative
- between colour and shape information in different regions of the image.
+Spatial techniques involve descriptors that represent information from different
+ areas of the image.
  This is done by dividing the image into a grid of cells and then calculating
- individual 'sub-descriptors' which are concatenated into the global image
+ individual 'sub-descriptors' which are concatenated into a global image
  descriptor.
 \end_layout
 
 \begin_layout Standard
-These sub-descriptors can be calculated using any approprate method however
+These sub-descriptors can be calculated using any appropriate method however
  a main consideration should be the dimensionality of the final descriptor.
- This can be calculted using the following equation,
+ This can be calculated using the following equation,
 \end_layout
 
 \begin_layout Standard
@@ -369,7 +390,7 @@ Where
 
 \begin_layout Standard
 It would be feasible to calculate a colour histogram however this already
- generates a desciptor of 
+ generates a descriptor of 
 \begin_inset Formula $q^{3}$
 \end_inset
 
@@ -377,7 +398,7 @@ It would be feasible to calculate a colour histogram however this already
 \begin_inset Formula $q$
 \end_inset
 
- is the number of divisions.
+ is the number of bins.
 \end_layout
 
 \begin_layout Standard
@@ -386,7 +407,7 @@ For example using a
 \end_inset
 
  value of 4 and a spatial grid of 6 x 4 would produce a descriptor in 1536
- dimenions, while a 
+ dimensions, while a 
 \begin_inset Formula $q$
 \end_inset
 
@@ -401,7 +422,7 @@ This is an extremely high value and will increase the time taken to calculate
 \begin_layout Standard
 For a spatial colour descriptor the average RGB values for each cell can
  be used as these sub descriptors will be three dimensional reducing the
- total value.
+ total size.
 \end_layout
 
 \begin_layout Subsubsection
@@ -409,15 +430,15 @@ Efficacy
 \end_layout
 
 \begin_layout Standard
-Computing a spatial descriptor can increase performance when highlighting
+Computing a spatial colour descriptor can increase performance when highlighting
  the difference to a colour histogram.
  While a colour histogram will describe how many of each colour is present
  in an image, spatial colour techniques of the type described above will
  indicate the colours found in each area of the image.
  Considering an image of a cow in a field, the colour histogram will identify
  and count the brown pixels of the cow and the green pixels of the field,
- spatial colour techniques will identify an area of brown in the middle
- of an image surrounded by an area of green.
+ spatial colour techniques will identify an area of brown surrounded by
+ an area of green.
  
 \end_layout
 
@@ -426,7 +447,7 @@ Spatial Texture
 \end_layout
 
 \begin_layout Standard
-Spatial texture replaces the colour sub-desciptor from before with a descriptor
+Spatial texture replaces the colour sub-descriptor from before with a descriptor
  that reflects the texture found in the image as described by the edges
  that can be detected.
  
@@ -455,7 +476,7 @@ noprefix "false"
 
 \end_inset
 
-), which approximates the gradient of the greyscale intensity of an image.
+), which approximates the gradient of the grey-scale intensity of an image.
 \begin_inset Float figure
 wide false
 sideways false
@@ -562,7 +583,7 @@ Application
 
 \begin_layout Standard
 To create a descriptor, both the angle and magnitude information will be
- used, the descriptor itself will reflect information about the angle of
+ used, the descriptor itself will reflect information about the angles of
  the edges found.
 \end_layout
 
@@ -570,13 +591,13 @@ To create a descriptor, both the angle and magnitude information will be
 First the image grid cells will be thresholded using the magnitude values.
  Magnitude values can be seen to represent the confidence with which edges
  can be found and so here a decision is effectively being made as to what
- are and are not edges, this value can be tuned to best match the applcation.
+ are and are not edges, this value can be tuned to best match the application.
 \end_layout
 
 \begin_layout Standard
-Once a thresholded edge maginute image has been found, a normalised histogram
+Once a thresholded edge magnitude image has been found, a normalised histogram
  will be calculated for the angles of these edges.
- This histograms of each grid cell will act as the descriptor when concatenated
+ This histogram for each grid cell will act as the descriptor when concatenated
  into a vector of dimensionality, 
 \begin_inset Formula $D$
 \end_inset
@@ -623,9 +644,18 @@ When extracting a descriptor from an image an important design factor is
 \begin_layout Standard
 Principal component analysis is the process of identifying the orthogonal
  directions and magnitudes of variation in a dataset.
- In doing so redundant, low variation dimensions can be identified and removed.
- The resulting dataset has a lower dimensionality and complexity but retains
- the majority of variation in the remaining dimensions.
+ For a multidimensional descriptor this is called the covariance.
+ The covariance can be decomposed, or 'factorised', into matrices of eigenvector
+s and values defining the directions and magnitudes of the model's variations.
+ This allows low variation dimensions to be remove by identifying vectors
+ with low eigenvalues.
+ 
+\end_layout
+
+\begin_layout Standard
+This reduced model can be used to project the dataset into the same lower
+ dimensionality, reducing complexity but retaining the majority of variation
+ in the remaining dimensions.
 \end_layout
 
 \begin_layout Standard
@@ -639,7 +669,7 @@ status open
 \begin_inset Graphics
 	filename pca-example.png
 	lyxscale 30
-	width 80col%
+	width 70col%
 
 \end_inset
 
@@ -712,7 +742,7 @@ Once image descriptors are plotted in a feature space, a visual search system
 In mathematics the length of a vector is evaluated using a function referred
  to as a norm.
  Different types of norm can affect the performance of the system and therefore
- different norms should be varied and measured.
+ different norms should be used and compared.
 \end_layout
 
 \begin_layout Standard
@@ -737,7 +767,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-A single 2D cartesian co-ordinate with it's component lengths in blue and
+A single 2D Cartesian co-ordinate with it's component lengths in blue and
  its Euclidean magnitude in red
 \begin_inset CommandInset label
 LatexCommand label
@@ -765,7 +795,11 @@ L1 Norm
 \begin_layout Standard
 The L1 norm, or Manhattan distance, is the sum of the absolute values of
  the vector.
- For a 2D vector, 
+ 
+\end_layout
+
+\begin_layout Standard
+For a 2D vector, 
 \begin_inset Formula $x=\left(i,j\right)$
 \end_inset
 
@@ -850,12 +884,77 @@ noprefix "false"
 Mahalanobis Distance
 \end_layout
 
+\begin_layout Standard
+The Mahalanobis distance extends the L2 norm to better account for the nature
+ of a data model defined through principal component analysis.
+ Instead of calculating the distance between two points in a feature space,
+ a model represents a region in space and here a more useful distance would
+ that between a point and the closest part of that region in space.
+\end_layout
+
+\begin_layout Standard
+The Mahalanobis distance allows this to be calculated by measuring the standard
+ deviations away from the model's mean a point is, in doing so normalising
+ for the model's shape in space.
+ When moving from the root frame of reference to the frame defined by a
+ model defined through PCA, the Mahalanobis distance becomes Euclidean distance.
+ In essence we are finding the distance a point is from a model from the
+ model's frame of reference.
+\end_layout
+
+\begin_layout Standard
+The Mahalanobis distance, 
+\begin_inset Formula $d$
+\end_inset
+
+, can be calculated with
+\begin_inset Formula 
+\[
+d^{2}=\left(x-\mu\right)^{T}C^{-1}\left(x-\mu\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the covariance, 
+\begin_inset Formula $C$
+\end_inset
+
+, undergoes eigendecomposition the eigenvectors, 
+\begin_inset Formula $U$
+\end_inset
+
+, and eigenvalues, 
+\begin_inset Formula $V$
+\end_inset
+
+, can be used to calculate the Mahalanobis distance with
+\begin_inset Formula 
+\[
+d^{2}=\left|V^{-1}U^{-1}\left(x-\mu\right)\right|
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Test Methods
 \end_layout
 
 \begin_layout Subsection
 Dataset
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Dataset"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -897,11 +996,12 @@ For example category 1 is a collection of images of cows, sheep and horses
 \end_layout
 
 \begin_layout Standard
-During the evaulation of implemented visual search techniques the classification
+During the evaluation of implemented visual search techniques the classification
  of each image is done by referencing the group index they are named with.
- As such, occurences of false negatives may increase as images that do in
- fact look similar as they are both, say, images of cows will be marked
- as not similar and measure negatively for the performance of the method.
+ As such, occurrences of false negatives may increase as images that do
+ in fact look similar as they are both, say, images of cows will be marked
+ as not the right category and measure negatively for the performance of
+ the method.
 \end_layout
 
 \begin_layout Subsection
@@ -909,7 +1009,7 @@ Precision and Recall
 \end_layout
 
 \begin_layout Standard
-When comapring the effectiveness of different descriptors the main measurements
+When comparing the effectiveness of different descriptors the main measurements
  are those of precision and recall.
 \end_layout
 
@@ -932,14 +1032,14 @@ At each
 \end_inset
 
  that are classed as relevant.
- Higher precision values indicate better system accuracy and an ideal system
- response as 
+ Higher precision values indicate better system performance and an ideal
+ system response as 
 \begin_inset Formula $n$
 \end_inset
 
  increases would be a precision of 1 until all relevant documents have been
- returned at which point it would reduce to a minimum value of the fraction
- of relevant documents in the dataset.
+ returned at which point it would gradually reduce to a minimum value of
+ the fraction of relevant documents in the dataset.
  This would indicate that the system is able to select a relevant image
  every time one is available.
 \end_layout
@@ -993,9 +1093,9 @@ A system with high precision but low recall at
 \begin_inset Formula $n$
 \end_inset
 
- would indicate that the system is able to very confident in its selection
- of relevant documents but may indicate an increase in false negatives where
- the system cannot correctly recognise a target image.
+ would indicate that the system is very confident in its selection of relevant
+ documents but may indicate an increase in false negatives where the system
+ cannot correctly recognise a target image.
 \end_layout
 
 \begin_layout Subsection
@@ -1021,8 +1121,12 @@ When plotted in this fashion with recall along the
 \end_inset
 
  the curve can be thought to plot the system performance over normalised
- time to retrieve the query's category set with perfect system performance
- being,
+ time to retrieve the query's category set.
+ 
+\end_layout
+
+\begin_layout Standard
+Perfect system performance is given by,
 \end_layout
 
 \begin_layout Standard
@@ -1047,7 +1151,7 @@ Methods
 Results were calculated for the global colour histogram, spatial colour,
  spatial texture and a combined descriptor of spatial colour and texture.
  Principal component analysis was also conducted on the spatial colour and
- texture descriptor in order to identify optimum levels of dimensionality
+ texture descriptor in order to identify the optimum levels of dimensionality
  reduction.
  Each descriptor has parameters that can be varied to alter it's performance.
  For each varying parameter a category response test was conducted.
@@ -1060,9 +1164,9 @@ Category Response
 \begin_layout Standard
 The category response test performs a number of queries on different images
  in order to calculate average performance values.
- These values are use to describe the performance of the applied descriptor,
+ These values are used to describe the performance of the applied descriptor,
  in order to make comparisons between descriptors valid the same query images
- are used for each.
+ are used for all investigations.
 \end_layout
 
 \begin_layout Standard
@@ -1085,11 +1189,7 @@ noprefix "false"
 \end_inset
 
  to allow the mean average precision to be calculated.
- This mean value is has an 
-\begin_inset Formula $n$
-\end_inset
-
- of 20 for each category of the MSRCv2 dataset.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1110,15 +1210,16 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-Completing one iteration for each category also allows a confusion matrix
+Completing an iteration for each category also allows a confusion matrix
  to be constructed.
  For each iteration the top 25 results were evaluated, this number was chosen
- as this is approximately the mean category size.
+ as it is similar to the average category size.
 \end_layout
 
 \begin_layout Standard
 The completed confusion matrix allows the main category confusions to be
- identified and discussions to be made.
+ identified and discussions to be made, each column represents an iteration
+ of the category response test and the matrix has been normalised by column.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1131,12 +1232,27 @@ For the global colour histogram the number of bins was varied to view the
  Values between 1 and 20 were investigated.
 \end_layout
 
+\begin_layout Standard
+The effect was measured using L1, Euclidean and Mahalanobis distance measures
+ although not all bin values could be evaluated for Mahalanobis distance
+ due to prohibitively high processing time.
+\end_layout
+
 \begin_layout Subsubsection
 Spatial Colour
 \end_layout
 
 \begin_layout Standard
-For spatial colour the grid dimensions were varied from 1x1 to 20x20.
+For spatial colour, category response tests were completed as the grid dimension
+s were varied from 1x1 to 20x20.
+ The resulting matrix of results were plotted as a surface to see how variations
+ in grid size affected mean average precision.
+\end_layout
+
+\begin_layout Standard
+The average precision recall curve was plotted for the best performing parameter
+s found in these investigations.
+ These experiments were doing using L2 (Euclidean) Distance.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1144,12 +1260,12 @@ Spatial Texture
 \end_layout
 
 \begin_layout Standard
-For spatial texture the grid dimensions were held at a performative result
- from the spatial colour investigations in order to investigate the effect
+For spatial texture the grid dimensions were brought forward from a high
+ achieving spatial colour investigation in order to evaluate the effect
  of varying both bin count and threshold value.
  While investigating each, the other was kept the same.
- Following calculations for both, the most performative value for each was
- used to test the effect of varying grid dimensions.
+ Following calculations for both, the best value for each was used to test
+ the effect of varying grid dimensions.
  Grid dimensions were not varied as widely as for spatial colour due to
  the prohibitively long processing time.
 \end_layout
@@ -1189,11 +1305,7 @@ noprefix "false"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-The effect of blurring the image or not before edge detection was also investiga
-ted.
+ These experiments were doing using Euclidean Distance.
 \begin_inset Float figure
 wide false
 sideways false
@@ -1268,6 +1380,13 @@ status open
 \begin_layout Plain Layout
 Image 5_15_s from the cow category followed by visualisation of detected
  edges
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:cow-pic"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1427,6 +1546,56 @@ name "fig:Angle-magnitude-0.2"
 
 \end_layout
 
+\begin_layout Subsubsection
+Spatial Colour and Texture
+\end_layout
+
+\begin_layout Standard
+The same spatial texture and grid dimension parameters were used when the
+ colour and texture descriptors were combined in order to allow comparison
+ between the results.
+ The grid dimensions were also varied between the same ranges.
+ These experiments were doing using Euclidean Distance.
+\end_layout
+
+\begin_layout Subsubsection
+Principal Component Analysis
+\end_layout
+
+\begin_layout Standard
+The covariance of all descriptors is calculated in order to define a model
+ for the dataset.
+ In doing so dimensions with low variation can be identified and dropped
+ by sorting the eigenvectors by magnitude of eigenvalue.
+\end_layout
+
+\begin_layout Standard
+The Mahalanobis distance was found between each pair of images.
+\end_layout
+
+\begin_layout Standard
+The proportion of eigenvalues that are dropped is referred to as the percentage
+ energy reduction and this energy reduction can be varied.
+\end_layout
+
+\begin_layout Standard
+To visualise the effect of varying dimensionality reduction, descriptors
+ with previously used parameter sets were tested with varying levels of
+ energy reduction to view it's effect on achievable mean average precision.
+\end_layout
+
+\begin_layout Subsubsection
+Descriptor Distance Measure
+\end_layout
+
+\begin_layout Standard
+With well performing spatial parameters ascertained, mean average precision
+ results were taken for L1, L2 (Euclidean) and Mahalanobis distance measures.
+ These results were used to compare the performance of each distance measure
+ with each descriptor and also as final results to summarise the relative
+ performance of each descriptor.
+\end_layout
+
 \begin_layout Section
 Results
 \end_layout
@@ -1447,11 +1616,13 @@ noprefix "false"
 \end_inset
 
 .
- The highest achieved mean average precision was 0.1446 for 5 bins, the lowest
- was 0.0998 for 34 bins.
- The MAP generally increases up until 5 bins before decreasing gradually
- as the bin count increases.
- 3 bins has a noticeably lower MAP result than those around it.
+ L1 performed slightly better than L2 at lower bins but continues to increase
+ in performance as Euclidean and Mahalanobis distances peak and begin to
+ decline.
+ Euclidean and Mahalanobis distance both peak at 5 bins (0.145 and 0.152 respectiv
+ely) while the L1 norm peaks at 15 with a value of 0.167.
+ 3 bins has a noticeably lower MAP result for all distance measures, 4 bins
+ also seems to be slightly below the trend of increase.
 \end_layout
 
 \begin_layout Standard
@@ -1465,7 +1636,7 @@ status open
 \begin_inset Graphics
 	filename ../data/colourHistogram/map-line.png
 	lyxscale 30
-	width 70col%
+	width 80col%
 
 \end_inset
 
@@ -1495,8 +1666,8 @@ name "fig:colour-histogram-bin-vary"
 \end_layout
 
 \begin_layout Standard
-The average PR curve for the best mean average precision, a bin count of
- 5, can be seen in figure 
+The average PR curve for the best L2 mean average precision, a bin count
+ of 5, can be seen in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:colour-histogram-avg-pr-n=5"
@@ -1553,6 +1724,69 @@ name "fig:colour-histogram-avg-pr-n=5"
 
 \end_layout
 
+\begin_layout Standard
+The confusion matrix for 5 bins can be seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:colour-histogram-confusion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The most confused category combinations were confusing cars for bikes and
+ bikes for faces.
+ The best classified category was book shelves.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/andy/dev/matlab/cv-coursework/data/colourHistogram/cm-5.jpg
+	lyxscale 30
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Global colour histogram confusion matrix for 5 bins
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:colour-histogram-confusion"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Spatial Colour
 \end_layout
@@ -1581,13 +1815,29 @@ noprefix "false"
 
 .
  The MAP starts at a low value with either dimension being 1, the lowest
- value being for a 1x1 grid (0.1103).
- For both dimensions an increase from 1 to 2 sees a decrease in MAP, more
- prominantly for 2 columns.
- MAP then increases as either dimension increases to 4 before, in general,
- decreasing past here.
+ value being for a 1x2 grid (0.1079).
+ As rows increase from 1 to 2 a performance increase can be seen.
+ This then decreases for 3 rows before increasing to a maxima at 4.
+ The increase from 1 to 2 columns sees a decrease in MAP before increasing
+ up to 4 columns.
+ 
+\end_layout
+
+\begin_layout Standard
+Past 4 in either dimension the performance tends to decrease.
  The highest achieved MAP was for 14 rows and 4 columns with a value of
  0.156.
+ The average PR curve for this result can be seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-colour-avg-pr"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \begin_inset Float figure
 wide false
 sideways false
@@ -1659,6 +1909,13 @@ status open
 
 \begin_layout Plain Layout
 Mean precision recall curve for spatial colour grid 14 rows, 4 columns
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:spatial-colour-avg-pr"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1667,7 +1924,7 @@ Mean precision recall curve for spatial colour grid 14 rows, 4 columns
 \end_layout
 
 \begin_layout Plain Layout
-
+parameter
 \end_layout
 
 \end_inset
@@ -1694,10 +1951,10 @@ noprefix "false"
 \end_inset
 
 .
- The MAP generally increases up to 7 bins with a value of 0.210, before generally
- decreasing.
- Odd numbers of bins generally achiveve higher MAPs than even bins up to
- this maxima before linearlly decreasing.
+ The MAP generally increases up to 7 bins with a value of 0.210, before decreasin
+g.
+ Odd numbers of bins tended to achieve higher MAPs than even bins up to
+ this maxima before linearly decreasing.
 \end_layout
 
 \begin_layout Standard
@@ -1745,7 +2002,8 @@ name "fig:Spatial-texture-bin-vary"
 \end_layout
 
 \begin_layout Standard
-The MAP values for varying thresholds can be seen in figure 
+The MAP values for varying edge magnitude thresholds can be seen in figure
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Spatial-texture-thresh-vary"
@@ -1799,7 +2057,8 @@ name "fig:Spatial-texture-thresh-vary"
 
 \begin_layout Standard
 A threshold of 0.09 and bin count of 7 was used to measure the effect of
- grid dimensions, the results for which can be seen in figure 
+ grid dimensions on mean average precision, the results for which can be
+ seen in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:spatial-texture-map-surface"
@@ -1866,8 +2125,8 @@ name "fig:spatial-texture-map-surface"
 \end_layout
 
 \begin_layout Standard
-The average PR curve using the most performative of each parameter and a
- grid of 4x4 can be seen in figure 
+The average PR curve using the best performing of each parameter and a grid
+ of 4x3 can be seen in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:spatial-texture-avg-pr"
@@ -1887,7 +2146,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename ../data/spatialTexture/avg-pr-4-4-7-0.09.png
+	filename ../data/spatialTexture/avg-pr-4-3-7-0.09.png
 	lyxscale 30
 	width 40col%
 
@@ -1897,7 +2156,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Mean precision recall curve for spatial texture 4x4 grid, 7 bins, threshold
+Mean precision recall curve for spatial texture 4x3 grid, 7 bins, threshold
  0.09
 \begin_inset CommandInset label
 LatexCommand label
@@ -1918,8 +2177,88 @@ name "fig:spatial-texture-avg-pr"
 
 \end_layout
 
+\begin_layout Standard
+The confusion matrix for spatial texture can be seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Spatial-texture-confusion-matrix"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The largest confusion was the system selecting planes and classifying them
+ as water features, 60% of the top 25 were misclassified in this fashion.
+ The best classified categories were planes and trees.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../data/spatialTexture/cm-4x3-7-0.09.jpg
+	lyxscale 30
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Spatial texture confusion matrix 4x3 grid, 7 bins, threshold 0.09
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Spatial-texture-confusion-matrix"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Spatial Colour and Texture
+\end_layout
+
+\begin_layout Standard
+The same parameters from spatial texture (7 bins, edge magnitude threshold
+ 0.09) were used to investigate how grid dimensions affect mean average precision
+, the results for which can be seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-colour-texture-map-surface"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -1974,8 +2313,25 @@ name "fig:spatial-colour-texture-map-surface"
 
 \end_layout
 
-\begin_layout Subsection
-Principal Component Analysis
+\begin_layout Standard
+As rows increase the MAP increases up to 4 rows before tending to decrease
+ past here.
+ As columns increase from 1 to 2 the mean average precision decreases before
+ increasing for 3 columns and then decreasing.
+ The highest MAP was found at 4 rows and 3 columns with a value of 0.217.
+ The lowest value was found at 2 columns and 1 row with a value of 0.1489.
+ The average PR curve for the best performing grid dimensions can be seen
+ in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-colour-texture-avg-pr"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -1987,7 +2343,147 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename ../data/PCA/colour-texture-4x4-7-0.09-deflation-100.png
+	filename ../data/spatialColourTexture/avg-pr-4-3-7-0.09.png
+	lyxscale 30
+	width 40col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mean precision recall curve for spatial colour and texture, 4 rows, 3 columns,
+ 7 bins, threshold 0.09
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:spatial-colour-texture-avg-pr"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The confusion matrix for combined spatial colour and texture can be seen
+ in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-colour-texture-confusion-matrix"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Here the largest errors are classifying sheep as birds, farm animals as
+ cows and signs as book shelves.
+ The most correctly classified images were trees and sheep.
+\end_layout
+
+\begin_layout Standard
+Comparing with the spatial texture matrix, the high proportion of plane's
+ being classed as water features decreased from 60% to 12%.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../data/spatialColourTexture/cm-4x3-7-0.09.jpg
+	lyxscale 30
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Confusion matrix for spatial colour and texture, 4 rows, 3 columns, 7 bins,
+ threshold 0.09
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:spatial-colour-texture-confusion-matrix"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Principal Component Analysis
+\end_layout
+
+\begin_layout Standard
+The spatial colour and texture parameters from before (4x3 grid, 7 bins,
+ 0.09 threshold) were used to ascertain how varying model energy reduction
+ affects mean average precision, the results for which can be seen in figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pca-colour-texture-map"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ As energy is reduced the MAP increases to a maximum between 0.5% and 4%.
+ Beyond this reduction the mean average precision decreases to a constant
+ value.
+\end_layout
+
+\begin_layout Standard
+The red line indicates the mean average precision achieved with the same
+ descriptor parameters without PCA.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../data/PCA/colour-texture-4x3-7-0.09-deflation-100.png
 	lyxscale 30
 	width 60col%
 
@@ -1999,7 +2495,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename ../data/PCA/colour-texture-4x4-7-0.09-deflation-20.png
+	filename ../data/PCA/colour-texture-4x3-7-0.09-deflation-20.png
 	lyxscale 30
 	width 60col%
 
@@ -2014,8 +2510,15 @@ Red line indicates MAP without PCA
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-MAP for spatial colour and texture (4x4, 7 bins, thres.
+MAP for spatial colour and texture (4x3, 7 bins, thres.
  0.09) as percentage energy is reduced
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pca-colour-texture-map"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2023,13 +2526,40 @@ MAP for spatial colour and texture (4x4, 7 bins, thres.
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The summary data table of these results can be seen in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:pca-colour-texture-map"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, varying resolution's of the independent variable are in order to highlight
+ the important values of energy reduction, namely the points at which it
+ exceeds the non-PCA value and the highest achieved value.
+ A higher resolution table of values can be seen in appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:pca-map"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Red values again indicate improvements over queries without PCA.
+ The highest achieved MAP was 0.251 at 1.4% reduction.
+ This represents a 16% increase over the 0.217 value for queries without
+ PCA.
 \begin_inset Float table
 wide false
 sideways false
@@ -2038,7 +2568,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="15" columns="2">
+<lyxtabular version="3" rows="12" columns="2">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
@@ -2076,7 +2606,7 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.1033
+0.1208
 \end_layout
 
 \end_inset
@@ -2096,7 +2626,7 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.1735
+0.2067
 \end_layout
 
 \end_inset
@@ -2107,6 +2637,32 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\color red
+0.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\color red
+0.2217
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\color red
 1
 \end_layout
 
@@ -2116,27 +2672,9 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.2075
-\end_layout
 
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1.1
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0.2140
+\color red
+0.2377
 \end_layout
 
 \end_inset
@@ -2149,7 +2687,7 @@ Mean Average Precision
 \begin_layout Plain Layout
 
 \color red
-1.2
+1.4
 \end_layout
 
 \end_inset
@@ -2160,31 +2698,7 @@ Mean Average Precision
 \begin_layout Plain Layout
 
 \color red
-0.2239
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\color red
-1.5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\color red
-0.2337
+0.251
 \end_layout
 
 \end_inset
@@ -2208,31 +2722,7 @@ Mean Average Precision
 \begin_layout Plain Layout
 
 \color red
-0.2358
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\color red
-2.5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\color red
-0.2334
+0.244
 \end_layout
 
 \end_inset
@@ -2256,31 +2746,7 @@ Mean Average Precision
 \begin_layout Plain Layout
 
 \color red
-0.2328
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\color red
-3.5
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\color red
-0.2279
+0.2173
 \end_layout
 
 \end_inset
@@ -2304,7 +2770,7 @@ Mean Average Precision
 \begin_layout Plain Layout
 
 \color red
-0.2178
+0.2172
 \end_layout
 
 \end_inset
@@ -2315,6 +2781,8 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\color red
 4.1
 \end_layout
 
@@ -2324,7 +2792,9 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.2111
+
+\color red
+0.217
 \end_layout
 
 \end_inset
@@ -2335,7 +2805,7 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-4.5
+4.2
 \end_layout
 
 \end_inset
@@ -2344,7 +2814,7 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.196
+0.2161
 \end_layout
 
 \end_inset
@@ -2364,7 +2834,7 @@ Mean Average Precision
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.1913
+0.2023
 \end_layout
 
 \end_inset
@@ -2378,13 +2848,20 @@ Mean Average Precision
 \end_layout
 
 \begin_layout Plain Layout
+\align center
+Red values indicate improvements over query without PCA (0.217)
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Mean average precision values for spatial colour and texture (4x4, 7 bins,
+Mean average precision values for spatial colour and texture (4x3, 7 bins,
  thres.
  0.09) as dimensionality is reduced through PCA
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:pca-colour-texture-map"
 
 \end_inset
 
@@ -2394,19 +2871,267 @@ Mean average precision values for spatial colour and texture (4x4, 7 bins,
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The confusion matrix for spatial colour and texture with PCA can be seen
+ in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pca-colour-texture-confusion-matrix"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The largest confusions were classifying signs as bookshelves, cat's as
+ the coast and sheep as birds.
+ The most correctly classified categories were planes, book shelves and
+ trees.
+\end_layout
+
+\begin_layout Standard
+Looking to the confusion matrix without PCA, the already high confusion
+ of sign's as bookshelves has increased from 32% to 40% despite the correct
+ classifications also increasing from 44% to 48%.
+ 
+\end_layout
+
+\begin_layout Standard
+The high confusion of sheep as bird's has decreased from 44% to 32%.
+ However the percentage of farm animals being classed as bird's has increased
+ from 12% to 28%.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/andy/dev/matlab/cv-coursework/data/PCA/colour-texture-cm-4x3-7-0.09-1.4.jpg
+	lyxscale 30
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Spatial colour and texture confusion matrix with PCA, 4 rows, 3 columns,
+ 7 bins, threshold 0.09
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pca-colour-texture-confusion-matrix"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Descriptor Distance Measurements
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:descriptor-map-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shows a comparison of mean average precision values for different descriptors
+ using their best achieved results.
+ For spatial descriptors all have a grid of 4 by 4 in order to allow a direct
+ comparison, spatial texture descriptors also use a bin count of 7 and edge
+ magnitude threshold of 0.09 in order to do the same.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/andy/dev/matlab/cv-coursework/data/MAPComparison.png
+	lyxscale 30
+	width 70col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mean average precision for different descriptors at same parameters
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:descriptor-map-comparison"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The inclusion of spatial texture over solely colour derived descriptors
+ saw a general increase in mean average precision the outlier being Mahalanobis
+ distance for spatial texture which the lowest recorded value.
+ L1 was the best performing distance measure overall being the best for
+ all descriptors except spatial colour.
+ The use of PCA and Mahalanobis distance was the second best performing
+ distance in all cases except spatial texture.
+ This leaves Euclidean distance performing the worst of all categories except
+ spatial texture.
+ The use of L1 with a spatial colour and texture descriptor had a 53% higher
+ mean average precision than a global colour histogram with an L1 measure.
 \end_layout
 
 \begin_layout Section
 Discussion
 \end_layout
 
+\begin_layout Subsection
+Global Colour Histogram
+\end_layout
+
+\begin_layout Standard
+All three of the distance measures increased in performance up to a peak
+ value.
+ This can be attributed to the descriptor becoming more discriminative.
+ Low bin counts will mean that many more pixels are placed in each bin to
+ the point that comparisons are less meaningful.
+ 
+\end_layout
+
+\begin_layout Standard
+Equally, performance decreases past a certain point as the descriptor starts
+ to over-fit to the data.
+ Over-fitting describes a descriptor that is too sensitive to differences
+ in images such that it is no longer comparing meaningful variables.
+ 
+\end_layout
+
+\begin_layout Standard
+For the global colour histogram if the bin size continued to increase, each
+ bin would eventually be comprised of only one or a handful of pixels which
+ cannot be compared effectively.
+ This explains why for bin count and many other descriptor parameters there
+ is an optimum value and performance doesn't just increase linearly with
+ that parameter.
+\end_layout
+
+\begin_layout Subsection
+Spatial Colour
+\end_layout
+
+\begin_layout Standard
+The lower dimension configurations of the spatial colour descriptor performing
+ worse can be explained the same way as low bin numbers for the global colour
+ histogram.
+ A 1x1 grid indicates that the average colour values are taken for the image
+ in it's entirety, this 3D descriptor would not be particularly discriminative.
+\end_layout
+
+\begin_layout Standard
+The significance of the best performing configuration having 14 rows is
+ not particularly high.
+ Looking to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-colour-map-surfaces"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ either dimension being 4 gives similarly good results with little variation,
+ the best being 14 by a slim margin.
+\end_layout
+
+\begin_layout Standard
+An interesting result was that increasing the row count from 1 to 2 increased
+ MAP while increasing the columns in the same fashion decreased performance.
+\end_layout
+
+\begin_layout Subsection
+Spatial Texture
+\end_layout
+
+\begin_layout Standard
+The trend of increase in performance for increasing bin counts can be attributed
+ to creating a more discriminative descriptor.
+ For example, a bin count of 1 will mean that each cell's sub-descriptor
+ is made up of only the count of pixels deemed to be edges without any further
+ information as to which direction they are facing.
+ As the count increases from here a maximum performance can be attained
+ before the descriptor starts over-fitting to the data.
+\end_layout
+
+\begin_layout Standard
+The interesting results of odd numbers of bins giving better than even bins
+ could suggest that the edges of this combination of query and dataset are
+ naturally more discriminative when quantised into odd numbers of bins as
+ opposed to even although this would require investigation to comment further.
+\end_layout
+
 \begin_layout Standard
 Worth noting is that during the spacial texture experiments optimal parameters
  were used as fixed variables for further testing, namely the bin count
  and threshold values.
- In doing so performative results for the descriptor could be evaluated
- for this query however the results are query and data dependent as are
- the rest of the results in this coursework.
+ In doing so good results for the descriptor could be evaluated for this
+ query however the results are query and data dependent as are the rest
+ of the results in this coursework.
  Cascading optimal parameters in further experiments like this does not
  necessarily represent the best set of parameters for this descriptor as
  each optimum value was found with the others fixed.
@@ -2414,13 +3139,316 @@ Worth noting is that during the spacial texture experiments optimal parameters
 \end_layout
 
 \begin_layout Standard
-This query and dataset's set of optimum paramters for a descriptor could
+This query and dataset's set of optimum parameters for a descriptor could
  be experimentally found with more complex testing methods however this
  is not within the scope of this work.
 \end_layout
 
+\begin_layout Subsection
+Spatial Colour and Texture
+\end_layout
+
+\begin_layout Standard
+Looking to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:spatial-colour-texture-map-surface"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ this surface can be seen to be a combination of the two traced by spatial
+ colour and texture individually.
+ The spatial colour characteristic of decreasing performance from 1 to 2
+ columns but increasing from 1 to 2 rows is visible, but the maximum value
+ at 4x3 from spatial texture is also apparent.
+\end_layout
+
+\begin_layout Standard
+Looking to the confusion matrices of spatial texture and spatial colour
+ and texture, the combinatory descriptor does not perform better in every
+ category.
+ 
+\end_layout
+
+\begin_layout Standard
+While spatial colour and texture does, for example, reduce the mis-classificatio
+n of planes as water features the percentage of correct water feature classifica
+tions only increases by 4%.
+ Spatial colour and texture performed worse at correctly classifying
+\end_layout
+
+\begin_layout Itemize
+Birds
+\end_layout
+
+\begin_layout Itemize
+Buildings
+\end_layout
+
+\begin_layout Itemize
+Cars
+\end_layout
+
+\begin_layout Itemize
+Coast
+\end_layout
+
+\begin_layout Itemize
+Cows
+\end_layout
+
+\begin_layout Itemize
+Human Figures
+\end_layout
+
+\begin_layout Itemize
+Planes
+\end_layout
+
+\begin_layout Standard
+Worth noting is the cow query classification column which shows that only
+ 8% of the top 25 results were of the cow category.
+ 44% were farm animals, with reference to section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Dataset"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ this can be explained by the visual overlap between the two categories.
+ Inspecting the dataset, half of the farm animals category are photos of
+ groups of cows which can lead to false negatives.
+\end_layout
+
+\begin_layout Standard
+Also interesting, looking to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:descriptor-map-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, was the slight increase in mean average precision between spatial texture
+ and the inclusion of colour information.
+ It could be expected that including both would provide greater improvements
+ over applying either separately than were observed.
+\end_layout
+
+\begin_layout Subsection
+Principal Component Analysis
+\end_layout
+
+\begin_layout Standard
+The reduction of eigenvalue energy for a model was seen to increase achievable
+ MAP for the spatial colour and texture descriptor when done within a specific
+ range.
+ The initial increase in performance can be attributed to removing dimensions
+ of low variance and importance.
+ In doing so the remaining descriptor can be more discriminative.
+\end_layout
+
+\begin_layout Standard
+However past this point relevant information starts being removed resulting
+ in degradation of performance.
+\end_layout
+
+\begin_layout Standard
+In summary the use of PCA and Mahalanobis distance does not inherently increase
+ performance but using a reasonable level of energy reduction such as 2%
+ can increase performance.
+\end_layout
+
+\begin_layout Subsection
+Comparisons
+\end_layout
+
+\begin_layout Standard
+Looking to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:descriptor-map-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ it can be seen that spatial texture descriptors can achieve better mean
+ average precision values than solely colour information based descriptors.
+ This indicates that using spatial information can form a more discriminative
+ descriptor than without.
+\end_layout
+
+\begin_layout Standard
+The slight performance gain from the colour histogram to spatial colour
+ suggests that when looking solely at colour, spatial information does not
+ necessarily well surpass a colour histogram.
+ 
+\end_layout
+
+\begin_layout Standard
+When thinking about a picture of a cow like in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:cow-pic"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, the spatial colour descriptor will identify an average of green surrounding
+ an average of brown.
+ The colour histogram however still identifies both the brown and green
+ pixels and encodes them.
+\end_layout
+
+\begin_layout Standard
+While it may have been thought that spatial techniques were better as a
+ whole than the global colour histogram, they in fact perform comparably
+ indicating that they may have different applications.
+\end_layout
+
+\begin_layout Standard
+Spatial texture descriptors represent the largest increase in performance.
+ This can be attributed to spatial texture techniques attempting to identify
+ and describe the shapes of objects within the image as opposed to just
+ the colours present.
+\end_layout
+
+\begin_layout Standard
+Colour exclusive methods can be less discriminative as different objects
+ can generate similar descriptors by being similar colours.
+ This could explain the global colour histogram frequently confusing cars
+ and bikes as both have similar metallic colours.
+ Using shape information allows for discrimination between images such as
+ those seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:sheep-flower"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ where both are white objects on a green background.
+ Here using shape information provides an opportunity to distinguish between
+ the two.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/andy/dev/matlab/cv-coursework/data/9_21_s.png
+	lyxscale 30
+	width 30col%
+
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/andy/dev/matlab/cv-coursework/data/10_15_s.png
+	lyxscale 30
+	width 30col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example of images with comparable colour information but different shapes
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:sheep-flower"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The act of reducing the dimensionality of most of the descriptors improved
+ performance however this only occurs when the optimum level of reduction
+ is achieved.
+ Looking again to figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pca-colour-texture-map"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ only the maxima of the curve represents results that were better than could
+ be achieved without reduction.
+ Without identifying this range the performance can be worse, 2% appears
+ to be a reasonable range to reduce by.
+ When using this value for all descriptors a performance increase was generally
+ observed indicating that it may be worth considering in most instances.
+\end_layout
+
 \begin_layout Section
 Conclusions
+\end_layout
+
+\begin_layout Standard
+To summarise, spatial texture techniques were found to perform better than
+ exclusively colour based methods such as a global colour histogram.
+ While the combination of both colour and texture information didn't provide
+ as much of an improvement over either separately as expected, the combination
+ of both colour and texture information as part of the descriptor was the
+ best performing while using the L1 norm.
+\end_layout
+
+\begin_layout Standard
+The use of appropriate amounts (approximately 2%) of dimensionality reduction
+ following principal component analysis provided additional performance
+ increases.
+ 
+\end_layout
+
+\begin_layout Standard
+Following investigations into difference distance measures the L1 norm tended
+ to be best performing method.
 \end_layout
 
 \begin_layout Standard
@@ -7395,6 +8423,971 @@ Grid Size
 
 \begin_layout Plain Layout
 0.1836
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Principal Component Analysis MAP values
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:pca-map"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="47" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Percentage Energy Reduction
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mean Average Precision
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1208
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1498
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1656
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1885
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2017
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2067
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2217
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2222
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2329
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2414
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2377
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.234
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2425
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2462
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.251
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2465
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2463
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2448
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2425
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2423
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.244
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2434
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2409
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2379
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2352
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2353
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2274
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.229
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2271
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2261
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2173
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2172
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.218
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2114
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2234
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2129
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2137
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2134
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2132
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2133
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2172
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.217
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2161
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2161
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.2058
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1944
 \end_layout
 
 \end_inset

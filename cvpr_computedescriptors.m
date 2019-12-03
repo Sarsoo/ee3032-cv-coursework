@@ -23,10 +23,10 @@ OUT_FOLDER = 'descriptors';
 %% the idea is all your descriptors are in individual folders - within
 %% the folder specified as 'OUT_FOLDER'.
 % OUT_SUBFOLDER='avgRGB';
-% OUT_SUBFOLDER='globalRGBhisto';
+OUT_SUBFOLDER='globalRGBhisto';
 % OUT_SUBFOLDER='spatialColour';
 % OUT_SUBFOLDER='spatialTexture';
-OUT_SUBFOLDER='spatialColourTexture';
+% OUT_SUBFOLDER='spatialColourTexture';
 
 allfiles=dir (fullfile([DATASET_FOLDER,'/Images/*.bmp']));
 for filenum=1:length(allfiles)
@@ -39,10 +39,10 @@ for filenum=1:length(allfiles)
     
     %% EXTRACT FUNCTION
 %     F=extractAvgRGB(img);
-%     F=extractGlobalColHist(img, 2, 1, 8, 0.05);
-%     F=extractSpatialColour(img, 14, 4);
+    F=extractGlobalColHist(img, 5);
+%     F=extractSpatialColour(img, 4, 4);
 %     F=extractSpatialTexture(img, 4, 4, 7, 0.09);
-    F=extractSpatialColourTexture(img, 4, 4, 7, 0.09);
+%     F=extractSpatialColourTexture(img, 4, 4, 7, 0.09);
     save(fout,'F');
     toc
 end
