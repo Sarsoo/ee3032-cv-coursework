@@ -1750,7 +1750,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/colourHistogram/cm-5.jpg
+	filename ../data/colourHistogram/cm-5.jpg
 	lyxscale 30
 	width 100col%
 
@@ -2919,7 +2919,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/PCA/colour-texture-cm-4x3-7-0.09-1.4.jpg
+	filename ../data/PCA/colour-texture-cm-4x3-7-0.09-1.4.jpg
 	lyxscale 30
 	width 100col%
 
@@ -2985,7 +2985,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/MAPComparison.png
+	filename ../data/MAPComparison.png
 	lyxscale 30
 	width 70col%
 
@@ -3355,7 +3355,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/9_21_s.png
+	filename ../data/9_21_s.png
 	lyxscale 30
 	width 30col%
 
@@ -3367,7 +3367,7 @@ status open
 
 
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/10_15_s.png
+	filename ../data/10_15_s.png
 	lyxscale 30
 	width 30col%
 
@@ -4388,7 +4388,7 @@ name "subsec:Global-Colour-Histogram-pr-n-4"
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /home/andy/dev/matlab/cv-coursework/data/colourHistogram/pr-curves-n-4.png
+	filename ../data/colourHistogram/pr-curves-n-4.png
 	lyxscale 30
 	width 50col%
 
