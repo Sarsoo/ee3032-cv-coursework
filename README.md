@@ -1,3 +1,16 @@
+Visual Search Coursework
+=======================
+
+Investigation into different methods of visual search including colour histograms, spatial colour, spatial texture and a combination of the two using MATLAB and the MSRCv2 dataset.
+A copy of the report can be seen [here](report.pdf). Submitted as part of the third year EE3032 Computer Vision & Pattern Recognition module, this piece achieved full marks.
+
+![Mean average precision comparisons for different distance measures](data/MAPComparison.png)
+
+![Spatial colour mean average precision for different grid dimensions](data/spatialColour/mapSurface2.png)
+
+![Detected edges in one of the dataset images](data/edgeThresholds/cow-t-0.08.png)
+
+## Code
 
 /data - pulled images and spreadsheet of data
 /descriptor - functions for extracting descriptors

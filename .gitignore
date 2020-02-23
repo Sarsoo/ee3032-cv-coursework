@@ -2,4 +2,5 @@ dataset
 descriptors
 *~
 *#
-coursework.pdf
+*.pdf
+!report.pdf
